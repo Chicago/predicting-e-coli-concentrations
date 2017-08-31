@@ -1,0 +1,74 @@
+---
+title: Predicting E. coli concentrations using limited qPCR deployments at Chicago
+  beaches
+author: "Nick Lucius, many more and Tom Schenk Jr."
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+  pdf_document:
+    number_sections: yes
+  word_document: default
+bibliography: zotero-references.bib
+---
+
+```{r setup_environment, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+## Install necessary packages
+
+library(knitr)
+library(knitcitations)
+
+## Read bibliography
+biblio <- read.bibtex("zotero-references.bib")
+options("citation_format" = "pandoc")
+
+
+```
+
+> Culture-based methods to measure Escherichia coli (E. coli) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. However, these methods take up to 12 hours for processing. Statistical models are used to forecast bacteria levels in lieu of test results. Often, these results underestimate days with elevated E. coli levels. In Chicago, these models only accurately predicted elevated levels 6.5% percent of the time in 2015.
+> EPA approval of enterococci quantitative PCR (qPCR) methods allows for testing that is available within 3 hours, eschewing the need for predictive models. Unfortunately, these “rapid testing” methods are 100% to 400% more expensive than culture-based methods.
+> This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using data from Chicago, we find that the approach would have issued accurate advisories for 69 poor water quality “beach days” compared to 9 advisories issued by the previous model. The accuracy of the model rose from 4% to 12%--a 300% increase.
+
+
+# Introduction
+
+Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--typically based on time-series projections--to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and other related factors.
+
+Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II or "false negatives") `r citep(biblio["nevers_efficacy_2011"])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high. However, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
+
+Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hour time window an yield similar results as culture-based methods `r citep(biblio["haugland_comparison_2005"])`.
+
+However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
+
+While culture-based and qPCR measure two completely different markers for bactereia, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mixed the short turn-around of qPCE method that can be applied to beaches without that more expensive equipment.
+
+This paper proposed a hybrid model which uses readily available results from qPCR testing at select beaches to predict whether bacteria levels will be high at other beaches. We exploit the historical correlation between beaches to estimate water quality readings based solely on qPCR results that are available on the same day. As a result, these predictions can be used to "nowcast" water quality conditions.
+
+This method eschews time-series based methods, which seem unreliable between summers and, as mentioned, fails to predict when bacteria levels are too high. This paper discusses attemps to formulate time-series models, but we conclude that time-series models often exhibit the same issues, likely because of the inability of statistical models to completely comphrehend the conditions which give rise to bacteria levels.
+
+We find that the hybrid model is more accurate and consistent between seasons. Using data from 27 beaches managed by the Chicago Park District, we use 10 years of historical measurements to create a model to forecast whether bacteria levels at a beach will be elevated. During testing during the summer of 2017, the model was able to increase the accurate prediction of beaches by 200 percent. During the summer, the existing predictive model suggested that beaches will have elevated levels 9 times. The pilot model correctly suggested 60 additional beaches--for a total of 69 advisories. Meanwhile, the model did not increase the rate of falsly identifying days of high bacteria levels (known as Type I errors or "false positives").
+
+Since water quality is not isolated to any one location. In additon to Chicago, there are XXXX beaches along the Great Lakes. Both because this paper proposes new methodology and that methodology can be useful for other locations, the data and underlying analytical model is available for all researchers, cities, and the public. We briefly discuss this approach and how it may be leveraged.  
+
+# Background
+
+# Data
+
+# Methodology
+
+# Results
+
+# Open Science
+
+# Summary
+
+# References
+
+## Example citation code:
+
+* `r citep(biblio[[2]])` # Cite by entry position
+* `r citep(biblio["whitman_summer_2008"])` # Cite by entry in `zotero-references.bib`.
+
+```{r references, echo=FALSE, message=FALSE}
+write.bibtex(file="bibliography.bib")
+```
