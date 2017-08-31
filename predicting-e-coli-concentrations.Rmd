@@ -64,10 +64,6 @@ Since water quality is not isolated to any one location. In additon to Chicago, 
 
 # References
 
-## Example citation code:
-
-* `r citep(biblio[[2]])` # Cite by entry position
-* `r citep(biblio["whitman_summer_2008"])` # Cite by entry in `zotero-references.bib`.
 
 ```{r references, echo=FALSE, message=FALSE}
 write.bibtex(file="bibliography.bib")
