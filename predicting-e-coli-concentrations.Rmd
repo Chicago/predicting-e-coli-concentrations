@@ -56,6 +56,40 @@ Since water quality is not isolated to any one location. In additon to Chicago, 
 
 # Methodology
 
+Cluster analysis of the 20 regularly-tested beaches was performed using k-means clustering. The beaches were first grouped into 5 clusters based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. It is suspected, and our experience has been, that long breakwaters and frequent E. coli exceedances both confound prediction. Therefore, the cluster corresponding to these characteristics was removed from further analysis. The beaches in the omitted cluster were Calumet, Rainbow, 63rd, Ohio, and Montrose. 
+
+The remaining four clusters were reanalyzed using 5-cluster k-means with the same variables. 
+
+| Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 | Cluster 5 |
+|---|---|---|---|---|
+|Foster|North Avenue|Leone|31st|South Shore|
+|Osterman|Oak Street|Juneway|12th|57th|
+|Albion||Howard|39th||
+|||Rogers|||
+|||Jarvis|||
+
+
+Within each cluster, the beach with the most E. coli exceedances was selected for use as a model feature. The remaining beaches were selected to be predicted by the model.
+
+|Feature Beaches|Predicted Beaches|
+|---|---|
+|South Shore|57th|
+|31st|39th|
+|North Avenue|12th|
+|Foster|Oak Street|
+|Leone|Osterman|
+||Albion|
+||Juneway|
+||Howard|
+||Rogers|
+||Jarvis|
+
+A random forest regression model was trained with the following features: the predicted beach's name and culture-based results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
+
+A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.5%, the threshold within each year that corresponded to a 1.5% FPR was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
+
+In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes. 
+
 # Results
 
 # Open Science
