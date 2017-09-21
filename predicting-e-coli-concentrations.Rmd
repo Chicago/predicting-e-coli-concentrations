@@ -38,7 +38,7 @@ Yet, these models usually do not correctly identify days with elevated bacteria 
 
 Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hour time window an yield similar results as culture-based methods `r citep(biblio["haugland_comparison_2005"])`.
 
-However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
+However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r ciptep(biblio["news_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
 
 While culture-based and qPCR measure two completely different markers for bactereia, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mixed the short turn-around of qPCE method that can be applied to beaches without that more expensive equipment.
 
@@ -60,29 +60,29 @@ Cluster analysis of the 20 regularly-tested beaches was performed using k-means 
 
 The remaining four clusters were reanalyzed using 5-cluster k-means with the same variables. 
 
-| Cluster 1 | Cluster 2 | Cluster 3 | Cluster 4 | Cluster 5 |
-|---|---|---|---|---|
-|Foster|North Avenue|Leone|31st|South Shore|
-|Osterman|Oak Street|Juneway|12th|57th|
-|Albion||Howard|39th||
-|||Rogers|||
-|||Jarvis|||
+| Cluster 1 |   Cluster 2  | Cluster 3 | Cluster 4 |  Cluster 5  |
+|-----------|--------------|-----------|-----------|-------------|
+|  Foster   | North Avenue |   Leone   |    31st   | South Shore |
+| Osterman  | Oak Street   |  Juneway  |    12th   |     57th    |
+|  Albion   |              |   Howard  |    39th   |             |
+|           |              |   Rogers  |           |             |
+|           |              |   Jarvis  |           |             |
 
 
 Within each cluster, the beach with the most E. coli exceedances was selected for use as a model feature. The remaining beaches were selected to be predicted by the model.
 
-|Feature Beaches|Predicted Beaches|
-|---|---|
-|South Shore|57th|
-|31st|39th|
-|North Avenue|12th|
-|Foster|Oak Street|
-|Leone|Osterman|
-||Albion|
-||Juneway|
-||Howard|
-||Rogers|
-||Jarvis|
+| Feature Beaches | Predicted Beaches |
+|-----------------|-------------------|
+|   South Shore   |       57th        |
+|      31st       |       39th        |
+|   North Avenue  |       12th        |
+|     Foster      |     Oak Street    |
+|     Leone       |     Osterman      |
+|                 |      Albion       |
+|                 |      Juneway      |
+|                 |       Howard      |
+|                 |       Rogers      |
+|                 |       Jarvis      |
 
 A random forest regression model was trained with the following features: the predicted beach's name and culture-based results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
