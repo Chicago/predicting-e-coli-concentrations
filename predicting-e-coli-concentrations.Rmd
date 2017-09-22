@@ -56,7 +56,20 @@ Since water quality is not isolated to any one location. In additon to Chicago, 
 
 # Methodology
 
-Cluster analysis of the 20 regularly-tested beaches was performed using k-means clustering. The beaches were first grouped into 5 clusters based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. It is suspected, and our experience has been, that long breakwaters and frequent E. coli exceedances both confound prediction. Therefore, the cluster corresponding to these characteristics was removed from further analysis. The beaches in the omitted cluster were Calumet, Rainbow, 63rd, Ohio, and Montrose. 
+## Determining Beach Clusters
+
+The first objective is to cluster similar beaches. Specifically, identify beaches where bacteria levels and advisories are correlated with each other. We used K-means clustering algorithm to detect when beaches have similar movements. 
+
+Given a number of desired clusters ($k$), the objective is to group a beach ($i$) with a cluster of other beaches ($B_k$) together that minimize the sum of squares. Mathematically:
+
+$$ J(c_k) = \sum_{i=1}^{k} \sum_{x_i \in B_k} ||x_i - \mu_k||^2 $$
+
+It is an algorithm which cannot be solved as a closed-form solution. Instead, the algorithm provides an initial guess for clusters and runs over multiple iterations to find the clusters which minimize the overall error.
+
+K-means can be applied using multiple variables to find similar beaches. We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Parks District. K-means was applied to beaches based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
+
+Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. Namely, we removed beaches that have lengthy breakwaters which have an impact on bacteria levels at those beaches (). We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater and bacteria exceedances between 2006 and 2017 were positive (R^2 = 0.54). We removed beaches (which ones?) that have long breakwaters. Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. These beaches (which ones) were also removed from the analytical model.
+
 
 The remaining four clusters were reanalyzed using 5-cluster k-means with the same variables. 
 
@@ -84,13 +97,46 @@ Within each cluster, the beach with the most E. coli exceedances was selected fo
 |                 |       Rogers      |
 |                 |       Jarvis      |
 
+## Building the Predictive Model
+
+
 A random forest regression model was trained with the following features: the predicted beach's name and culture-based results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
+
+Historically, the USGS model from 2006 through 2016 had a false-positive rate of 1.8 percent. That is, the USGS model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to the historical false-positive rate. As Figure 2 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days were we falsely provide warnings to beach-goers.
+
+Figure XX shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days we falsely identify elevated levels. By constraining our model to only have a 1.8 percent false-positive rate, our true positive rate is forecasted to be 22 percent.
+
+(FIGURE XX)
 
 A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.5%, the threshold within each year that corresponded to a 1.5% FPR was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
 
 In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes. 
 
-# Results
+# Validating the Algorithm - Summer 2017
+
+The analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. Within machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to existing data and then fail to predict when data has not already been accounted for.
+
+Using the training data through 2016, we used the summer of 2017 to predict elevated levels and then measure the accuracy at the end of the season. This provided the same scenario as beach forecasting models: read the most recent data, formulate a prediction, collect water samples, and then compare the predictions to the collected samples. 
+
+qPCR measurements from 5 beaches: Calumet, Rainbow, Sourth Share, 63rd, and Montrose, were used to predict the qPCR levels at the other 15 regularly tested beaches. Beginning on Friday, May 26, we posted the predictions based on our model to the City of Chicago Data Portal at 6am. Water samples were then collected by the Chicago Park District and tested by the University of Illinois at Chicago. Those results were then posted to the City of Chicago Data Portal when they were available--typically around noon. The last predictions and samples were conducted on September 4th. 
+
+Both predictions and samples were collected each day during the week. This process was different from prior years where samples were usually collected only during weekdays and non-holidays except when levels had been elevated on the previous Friday or was suspected to be a busy weekend on the beaches.
+
+In summer 2017, the model concept was piloted with some limitations imposed by available data... (let's specify this)
+
+Table XX shows the truth table for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above XXXX amount). 
+
+Over the summer, the analytical model had a true positive rate of 11.2 percent compared to a true positive rate of 3.2 percent in 2016. Over the past decade, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 239 percent over the historical average.
+
+Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Our target rate was 1.5 percent to remain consistent with prior summers. Though higher than desired, the previous model had a false rate of 2 percent or higher (how many times out of the past 10 years??).
+
+(HISTORICAL GRAPH OF ACTUAL TPR/FPR LEVELS FOR USGS AND HYBRID MODEL)
+
+In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. While we cannot directly compare it to the USGS model, in 2016 that model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, there were 14 correct advisories versus 184 incorrect advisories.
+
+Nevertheless, the hybrid model still failed to identify days with elevated levels; the false negative rate. (How many??)
+
+
 
 # Open Science
 
