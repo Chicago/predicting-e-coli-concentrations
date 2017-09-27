@@ -1,4 +1,4 @@
-# Predicting _E. coli concentrations using limited qPCR deployments at Chicago
+# Predicting _E. coli_ concentrations using limited qPCR deployments at Chicago
 
 This repository is part of the working draft for an upcoming paper tentatively titled _Predicting _E. coli_ concentrations using limited qPCR deployments at Chicago_. It is an academic paper describing the methods and results of the City of Chicago [Clear Water](https://github.com/Chicago/clear-water) project.
 
