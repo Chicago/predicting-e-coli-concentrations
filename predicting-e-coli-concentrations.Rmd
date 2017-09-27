@@ -52,21 +52,47 @@ Since water quality is not isolated to any one location. In additon to Chicago, 
 
 # Background
 
+Timing is a crucial factor for monitoring baacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
+
 # Data
 
-# Methodology
+# Day-ahead Forecasting
 
-## Determining Beach Clusters
+## Existing Methodology
 
-The first objective is to cluster similar beaches. Specifically, identify beaches where bacteria levels and advisories are correlated with each other. We used K-means clustering algorithm to detect when beaches have similar movements. 
+## Ensemble Modeling
+
+
+
+# Hybrid Model
+
+
+Based on instability and inconsistency of the day-ahead forecasts, we infer that substantial information is lost between $t-1$ and $t$. It seems, though not conclusively, that information is lost between the two periods for a variety of reasons: incompleteness of the statistical predictors, failing to account for complex interaction terms in the statistical model, introduction of new factors between $t-1$ and $t$, etc.
+
+Scientists have developed methods to reduce the reliance on data from $t-1$ to estimate levels at time $t$. One method to achieve this is qPCR methods which allow measurement at $t$ to render same-day information. However, this technique costs between 2 to 5 times more than traditional culture-based methods. With limited resources, it may not be feasible for recreational water managers to afford a deployment at all available locations.
+
+Second, we propose that is possible to leverage qPCR measurements at select beaches to determine bacteria levels that did not have qPCR testing. `r \citet(biblio["whitman_summer_2008"])` noted that bacteria levels often flucuate which each other on the same day. Often, extreme highs and extreme lows were simultaneous for most beaches.
+
+Hybrid modeling uses selected observations ($x_i^t$) from today $t$ using qPCR testing at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$.
+
+The key difference is using information at time $t$ to predict . Recall, day-ahead forecasting relied on using information for $t-1$ to predict levels at time $t$ because collection at $t$ is not avialable until later, $t+1$.
+
+Hybrid models attempt to recast the research into a missing value problem. That is, from a research perspective, use information from the observed beaches to "fill-in" the data. Missing-value problems are common and often tackled in statistics in a variety of ways. For example, researchers can "fill-in" responses to surveys that were left partially blank. The general approach to missing-value problems is using observed correlations to fill-in missing values. 
+
+In the context of beaches, we can leverage the historical, observed correlations between $x_i$ and $y_i$ and then leverage today's observations from qPCR testing, $x_i^t$ to "fill-in" beaches that do not have qPCR testing, $y_i^t$. Because it uses data from the same period, we suspect it is less susceptible to the problems that cause day-ahead forecasting to be less reliable.
+
+
+## Identifying Beach Clusters
+
+We used clustering techniques to determine groups of beaches that tend to move in tandem. Specifically, identify beaches where bacteria levels and advisories are correlated with each other. We used K-means clustering algorithm to detect when beaches have similar movements. 
 
 Given a number of desired clusters ($k$), the objective is to group a beach ($i$) with a cluster of other beaches ($B_k$) together that minimize the sum of squares. Mathematically:
 
 $$ J(c_k) = \sum_{i=1}^{k} \sum_{x_i \in B_k} ||x_i - \mu_k||^2 $$
 
-It is an algorithm which cannot be solved as a closed-form solution. Instead, the algorithm provides an initial guess for clusters and runs over multiple iterations to find the clusters which minimize the overall error.
+It is an algorithm which cannot be solved as a closed-form solution. Instead, the algorithm provides an initial guess for clusters and runs over multiple iterations to find the clusters which minimize the overall error. First, there is an initial, random guess for which beaches belong in clusters. The distance or error is then measured, $x_i - \mu_k$ for all clusters. Then, membership of clusters is slightly altered, the error is then measured and determined if the error is increasing or decreasing. This process is repeated until the lowest measured error is obtained.
 
-K-means can be applied using multiple variables to find similar beaches. We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Parks District. K-means was applied to beaches based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
+We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Parks District. K-means was applied to beaches based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
 
 Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. Namely, we removed beaches that have lengthy breakwaters which have an impact on bacteria levels at those beaches (). We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater and bacteria exceedances between 2006 and 2017 were positive (R^2 = 0.54). We removed beaches (which ones?) that have long breakwaters. Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. These beaches (which ones) were also removed from the analytical model.
 
@@ -99,7 +125,6 @@ Within each cluster, the beach with the most E. coli exceedances was selected fo
 
 ## Building the Predictive Model
 
-
 A random forest regression model was trained with the following features: the predicted beach's name and culture-based results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
 Historically, the USGS model from 2006 through 2016 had a false-positive rate of 1.8 percent. That is, the USGS model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to the historical false-positive rate. As Figure 2 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days were we falsely provide warnings to beach-goers.
@@ -112,7 +137,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes. 
 
-# Validating the Algorithm - Summer 2017
+## Validating the Algorithm - Summer 2017
 
 The analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. Within machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to existing data and then fail to predict when data has not already been accounted for.
 
