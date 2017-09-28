@@ -58,6 +58,20 @@ Timing is a crucial factor for monitoring baacteria levels. We've adopted the ty
 
 # Prior-day Model
 
+The predominate forecasting technique uses prior bacteria testing results at beaches and other available data such as weather conditions, water conditions, or runoff.
+
+These models rely on prior-day data since culture-based testing is not available until the next day. Expressing it as a linear regression model, the prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$.
+
+For a linear regression model, the coefficients $\beta_i$ provide the weight for how much each factor matters:
+
+$$ x_i^t = f(x_i^{t-1}, w_1, w_2, ..., w_j) $$
+
+Often $f(...)$ is a linear regression such that $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$. But, models sometimes use log transformations, genetic algorithms, or other methods. These class of models often have the same structure of using predictions from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
+
+From 2006 to 2016, the Chicago Park District uses a model developed by the U.S. Geological Survey and Michigan State University to forecast whether bacteria levels will be elevated at Chicago beaches on Lake Michigan.
+
+Recently, researchers have had an expanding toolkit of machine learning algorithms to formulate predictions. These algorithms can be swapped with $f(...)$ to forecast bacteria levels at beaches. In this section, we will propose various different "prior-day" models which use prior culture-based tests to predict whether bacteria levels exceed the acceptable threshold.
+
 ## Existing Methodology
 
 ## Ensemble Modeling
