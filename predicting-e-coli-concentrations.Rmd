@@ -56,7 +56,7 @@ Timing is a crucial factor for monitoring baacteria levels. We've adopted the ty
 
 # Data
 
-# Day-ahead Forecasting
+# Prior-day Model
 
 ## Existing Methodology
 
@@ -67,7 +67,7 @@ Timing is a crucial factor for monitoring baacteria levels. We've adopted the ty
 # Hybrid Model
 
 
-Based on instability and inconsistency of the day-ahead forecasts, we infer that substantial information is lost between $t-1$ and $t$. It seems, though not conclusively, that information is lost between the two periods for a variety of reasons: incompleteness of the statistical predictors, failing to account for complex interaction terms in the statistical model, introduction of new factors between $t-1$ and $t$, etc.
+Based on instability and inconsistency of the prior-day models, we infer that substantial information is lost between $t-1$ and $t$. It seems, though not conclusively, that information is lost between the two periods for a variety of reasons: incompleteness of the statistical predictors, failing to account for complex interaction terms in the statistical model, introduction of new factors between $t-1$ and $t$, etc.
 
 Scientists have developed methods to reduce the reliance on data from $t-1$ to estimate levels at time $t$. One method to achieve this is qPCR methods which allow measurement at $t$ to render same-day information. However, this technique costs between 2 to 5 times more than traditional culture-based methods. With limited resources, it may not be feasible for recreational water managers to afford a deployment at all available locations.
 
@@ -75,11 +75,11 @@ Second, we propose that is possible to leverage qPCR measurements at select beac
 
 Hybrid modeling uses selected observations ($x_i^t$) from today $t$ using qPCR testing at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$.
 
-The key difference is using information at time $t$ to predict . Recall, day-ahead forecasting relied on using information for $t-1$ to predict levels at time $t$ because collection at $t$ is not avialable until later, $t+1$.
+The key difference is using information at time $t$ to predict . Recall, prior-day models relied on using information for $t-1$ to predict levels at time $t$ because collection at $t$ is not avialable until later, $t+1$.
 
 Hybrid models attempt to recast the research into a missing value problem. That is, from a research perspective, use information from the observed beaches to "fill-in" the data. Missing-value problems are common and often tackled in statistics in a variety of ways. For example, researchers can "fill-in" responses to surveys that were left partially blank. The general approach to missing-value problems is using observed correlations to fill-in missing values. 
 
-In the context of beaches, we can leverage the historical, observed correlations between $x_i$ and $y_i$ and then leverage today's observations from qPCR testing, $x_i^t$ to "fill-in" beaches that do not have qPCR testing, $y_i^t$. Because it uses data from the same period, we suspect it is less susceptible to the problems that cause day-ahead forecasting to be less reliable.
+In the context of beaches, we can leverage the historical, observed correlations between $x_i$ and $y_i$ and then leverage today's observations from qPCR testing, $x_i^t$ to "fill-in" beaches that do not have qPCR testing, $y_i^t$. Because it uses data from the same period, we suspect it is less susceptible to the problems that cause prior-day forecasting to be less reliable.
 
 
 ## Identifying Beach Clusters
