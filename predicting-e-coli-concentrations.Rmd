@@ -4,9 +4,9 @@ title: Predicting E. coli concentrations using limited qPCR deployments at Chica
 author: "Nick Lucius, many more and Tom Schenk Jr."
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
-  html_document:
-    number_sections: yes
   pdf_document:
+    number_sections: yes
+  html_document:
     number_sections: yes
   word_document: default
 bibliography: zotero-references.bib
@@ -32,15 +32,15 @@ options("citation_format" = "pandoc")
 
 # Introduction
 
-Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--typically based on time-series projections--to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and other related factors.
+Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--typically based on time-series projections--to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and other related factors.
 
-Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II or "false negatives") `r citep(biblio["nevers_efficacy_2011"])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high. However, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
+Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II or "false negatives") `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high. However, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
 
-Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hour time window an yield similar results as culture-based methods `r citep(biblio["haugland_comparison_2005"])`.
+Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hour time window an yield similar results as culture-based methods `r citep(biblio[c("haugland_comparison_2005","kinzelman_enterococci_2003")])`.
 
-However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r ciptep(biblio["news_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
+However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r citep(biblio["news_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
 
-While culture-based and qPCR measure two completely different markers for bactereia, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mixed the short turn-around of qPCE method that can be applied to beaches without that more expensive equipment.
+While culture-based and qPCR measure two completely different markers for bacteria, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mixed the short turn-around of qPCE method that can be applied to beaches without that more expensive equipment.
 
 This paper proposed a hybrid model which uses readily available results from qPCR testing at select beaches to predict whether bacteria levels will be high at other beaches. We exploit the historical correlation between beaches to estimate water quality readings based solely on qPCR results that are available on the same day. As a result, these predictions can be used to "nowcast" water quality conditions.
 
@@ -58,21 +58,22 @@ Timing is a crucial factor for monitoring baacteria levels. We've adopted the ty
 
 # Prior-day Model
 
-The predominate forecasting technique uses prior bacteria testing results at beaches and other available data such as weather conditions, water conditions, or runoff.
+Researchers have developed forecasting models using prior bacteria testing results at beaches and other available data such as precipitation `r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])`, sunlight `r citep(biblio["whitman_solar_2004"])`, wind `r citep(biblio[c("smith_effect_1999", "olyphant_elements_2004")])`, wave and tital `r citep(biblio[c("le_fevre_role_2003", "crowther_relationships_2001")])`, and turbidity `r citep(biblio["olyphant_characterization_2003"])`, and density of humans and animals `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`.
 
-These models rely on prior-day data since culture-based testing is not available until the next day. Expressing it as a linear regression model, the prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$.
+These models rely on prior-day data since culture-based testing is not available until upward of 12 hours after the samples were collected. The prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$.
 
-For a linear regression model, the coefficients $\beta_i$ provide the weight for how much each factor matters:
+These models often take the form of
 
 $$ x_i^t = f(x_i^{t-1}, w_1, w_2, ..., w_j) $$
 
-Often $f(...)$ is a linear regression such that $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$. But, models sometimes use log transformations, genetic algorithms, or other methods. These class of models often have the same structure of using predictions from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
+where $f(...)$ is a some function or algorithm that inputs raw data and outputs a probability. For instance, the linear regression model is typically $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$, where $\beta_j$ are the coefficients that weight the importance of each input. But, models often use log transformations `r citep(biblio["nevers_nowcast_2005"])`, polynomial coefficients `r citep(biblio["frick_nowcasting_2008"])`, logistic regression, partial least squares `r citep(biblio["hou_enterococci_2006"])`, generlized boosted regression modeling `r citep(biblio["cyterski_virtual_2014"])`, random forest and genetic algorithm approaches `r citep(biblio["brooks_predicting_2016"])`. These class of models often have the same structure of using predictions from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
 
-From 2006 to 2016, the Chicago Park District uses a model developed by the U.S. Geological Survey and Michigan State University to forecast whether bacteria levels will be elevated at Chicago beaches on Lake Michigan.
-
-Recently, researchers have had an expanding toolkit of machine learning algorithms to formulate predictions. These algorithms can be swapped with $f(...)$ to forecast bacteria levels at beaches. In this section, we will propose various different "prior-day" models which use prior culture-based tests to predict whether bacteria levels exceed the acceptable threshold.
+Recently, researchers have had an expanding toolkit of machine learning algorithms to formulate predictions `r citep(biblio["brooks_predicting_2016"])`. These algorithms can be swapped with $f(...)$ to forecast bacteria levels at beaches. In this section, we will propose various different "prior-day" models which use prior culture-based tests to predict whether bacteria levels exceed the acceptable threshold.
 
 ## Existing Methodology
+
+From 2006 to 2016, the Chicago Park District uses a model developed by the U.S. Geological Survey and Michigan State University to forecast whether bacteria levels will be elevated at Chicago beaches on Lake Michigan...
+
 
 ## Ensemble Modeling
 
@@ -80,12 +81,13 @@ Recently, researchers have had an expanding toolkit of machine learning algorith
 
 # Hybrid Model
 
-
-Based on instability and inconsistency of the prior-day models, we infer that substantial information is lost between $t-1$ and $t$. It seems, though not conclusively, that information is lost between the two periods for a variety of reasons: incompleteness of the statistical predictors, failing to account for complex interaction terms in the statistical model, introduction of new factors between $t-1$ and $t$, etc.
+Authors have repeatedly noted the one-day lag in data negatively impacts the ability for prior-day models to accurately predict for beach advisories and closure. The correlation between the prior-day bacteria readings has little correlation with elevated bacteria levels in the current period.
 
 Scientists have developed methods to reduce the reliance on data from $t-1$ to estimate levels at time $t$. One method to achieve this is qPCR methods which allow measurement at $t$ to render same-day information. However, this technique costs between 2 to 5 times more than traditional culture-based methods. With limited resources, it may not be feasible for recreational water managers to afford a deployment at all available locations.
 
-Second, we propose that is possible to leverage qPCR measurements at select beaches to determine bacteria levels that did not have qPCR testing. `r \citet(biblio["whitman_summer_2008"])` noted that bacteria levels often flucuate which each other on the same day. Often, extreme highs and extreme lows were simultaneous for most beaches.
+(Figure showing relationship between beaches)
+
+Second, we propose that is possible to leverage qPCR measurements at select beaches to determine bacteria levels that did not have qPCR testing. `r citet(biblio["whitman_summer_2008"])` noted that bacteria levels often flucuate which each other on the same day. Often, extreme highs and extreme lows were simultaneous for most beaches.
 
 Hybrid modeling uses selected observations ($x_i^t$) from today $t$ using qPCR testing at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$.
 
@@ -109,7 +111,6 @@ It is an algorithm which cannot be solved as a closed-form solution. Instead, th
 We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Parks District. K-means was applied to beaches based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
 
 Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. Namely, we removed beaches that have lengthy breakwaters which have an impact on bacteria levels at those beaches (). We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater and bacteria exceedances between 2006 and 2017 were positive (R^2 = 0.54). We removed beaches (which ones?) that have long breakwaters. Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. These beaches (which ones) were also removed from the analytical model.
-
 
 The remaining four clusters were reanalyzed using 5-cluster k-means with the same variables. 
 
