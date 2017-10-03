@@ -32,31 +32,27 @@ options("citation_format" = "pandoc")
 
 # Introduction
 
-Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--typically based on time-series projections--to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and other related factors.
+Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and water conditions.
 
-Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II or "false negatives") `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high. However, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
+Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II errors or "false negatives") `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high; however, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
 
-Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hour time window an yield similar results as culture-based methods `r citep(biblio[c("haugland_comparison_2005","kinzelman_enterococci_2003")])`.
+Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hours and yield similar results as culture-based methods `r citep(biblio[c("haugland_comparison_2005","kinzelman_enterococci_2003")])`.
 
-However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r citep(biblio["news_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to base swim advisories.
+However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r citep(biblio["news_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to produce swim advisories.
 
-While culture-based and qPCR measure two completely different markers for bacteria, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mixed the short turn-around of qPCE method that can be applied to beaches without that more expensive equipment.
+While culture-based and qPCR measure two completely different markers for bacteria, both of these tests have generally-acceptable thresholds for acceptable bacteria levels. Acceptable levels for culture-based methods should not exceed 235 MPN/100 ml while acceptable levels for qPCR testing should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. Within the context of beach management, these rules can be leveraged to create a new predictive model which mix the short turn-around of qPCE with statistical models to produce swim advisories.
 
-This paper proposed a hybrid model which uses readily available results from qPCR testing at select beaches to predict whether bacteria levels will be high at other beaches. We exploit the historical correlation between beaches to estimate water quality readings based solely on qPCR results that are available on the same day. As a result, these predictions can be used to "nowcast" water quality conditions.
+This paper proposes a hybrid model which uses readily available results from qPCR testing at select beaches to predict whether bacteria levels will be high at other beaches. We exploit the historical correlation between beaches to estimate water quality readings based solely on qPCR results that are available on the same day. This apporach allows limited deployment of qPCR equipment to reduce overall costs but provides a higher quality statistical model. As a result, these predictions can be used to "nowcast" water quality conditions.
 
-This method eschews time-series based methods, which seem unreliable between summers and, as mentioned, fails to predict when bacteria levels are too high. This paper discusses attemps to formulate time-series models, but we conclude that time-series models often exhibit the same issues, likely because of the inability of statistical models to completely comphrehend the conditions which give rise to bacteria levels.
+This method eschews time-series based methods, which seem unreliable between summers and, as mentioned, fails to predict when bacteria levels are too high. This paper discusses attemps to formulate time-series models--including the introduction of ensemble models--but we conclude that time-series models often exhibit inconsistency between beach seasons and relatively low rate of true positives and high rates of false negatives.
 
-We find that the hybrid model is more accurate and consistent between seasons. Using data from 27 beaches managed by the Chicago Park District, we use 10 years of historical measurements to create a model to forecast whether bacteria levels at a beach will be elevated. During testing during the summer of 2017, the model was able to increase the accurate prediction of beaches by 200 percent. During the summer, the existing predictive model suggested that beaches will have elevated levels 9 times. The pilot model correctly suggested 60 additional beaches--for a total of 69 advisories. Meanwhile, the model did not increase the rate of falsly identifying days of high bacteria levels (known as Type I errors or "false positives").
-
-Since water quality is not isolated to any one location. In additon to Chicago, there are XXXX beaches along the Great Lakes. Both because this paper proposes new methodology and that methodology can be useful for other locations, the data and underlying analytical model is available for all researchers, cities, and the public. We briefly discuss this approach and how it may be leveraged.  
+We find that the hybrid model is more accurate and consistent between seasons. Using data from 27 beaches managed by the Chicago Park District, we use 10 years of historical measurements to create a model to forecast whether bacteria levels at a beach will be elevated. During testing during the summer of 2017, the model was able to increase the accurate prediction of beaches by 200 percent. During the summer, the existing predictive model suggested that beaches will have elevated levels 9 times. The pilot model correctly suggested 60 additional beaches--for a total of 69 advisories. Meanwhile, the model did not increase the rate of falsly identifying days of high bacteria levels (known as Type I errors or "false positives"). 
 
 # Background
 
 Timing is a crucial factor for monitoring baacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
 
-# Data
-
-# Prior-day Model
+## Prior-day Model
 
 Researchers have developed forecasting models using prior bacteria testing results at beaches and other available data such as precipitation `r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])`, sunlight `r citep(biblio["whitman_solar_2004"])`, wind `r citep(biblio[c("smith_effect_1999", "olyphant_elements_2004")])`, wave and tital `r citep(biblio[c("le_fevre_role_2003", "crowther_relationships_2001")])`, and turbidity `r citep(biblio["olyphant_characterization_2003"])`, and density of humans and animals `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`.
 
@@ -68,37 +64,30 @@ $$ x_i^t = f(x_i^{t-1}, w_1, w_2, ..., w_j) $$
 
 where $f(...)$ is a some function or algorithm that inputs raw data and outputs a probability. For instance, the linear regression model is typically $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$, where $\beta_j$ are the coefficients that weight the importance of each input. But, models often use log transformations `r citep(biblio["nevers_nowcast_2005"])`, polynomial coefficients `r citep(biblio["frick_nowcasting_2008"])`, logistic regression, partial least squares `r citep(biblio["hou_enterococci_2006"])`, generlized boosted regression modeling `r citep(biblio["cyterski_virtual_2014"])`, random forest and genetic algorithm approaches `r citep(biblio["brooks_predicting_2016"])`. These class of models often have the same structure of using predictions from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
 
-Recently, researchers have had an expanding toolkit of machine learning algorithms to formulate predictions `r citep(biblio["brooks_predicting_2016"])`. These algorithms can be swapped with $f(...)$ to forecast bacteria levels at beaches. In this section, we will propose various different "prior-day" models which use prior culture-based tests to predict whether bacteria levels exceed the acceptable threshold.
+
 
 ## Existing Methodology
 
 From 2006 to 2016, the Chicago Park District uses a model developed by the U.S. Geological Survey and Michigan State University to forecast whether bacteria levels will be elevated at Chicago beaches on Lake Michigan...
 
+# Statistical Models
 
 ## Ensemble Modeling
 
+Typically, previous research has only explored one of the above models or compared individual models `r citep(biblio["brooks_predicting_2016"])`. In this section, we explore various different "prior-day" models and use ensemble modeling techniques to combine various statistical and machine-learning models. Ensemble models allows two or more models to be combined to yield predictions. This allows weaknesses from any single model to be mollified by other statistical models. Often, this yields better and more stable predictions.[^1]
 
+## Hybrid Model
 
-# Hybrid Model
-
-Authors have repeatedly noted the one-day lag in data negatively impacts the ability for prior-day models to accurately predict for beach advisories and closure. The correlation between the prior-day bacteria readings has little correlation with elevated bacteria levels in the current period.
-
-Scientists have developed methods to reduce the reliance on data from $t-1$ to estimate levels at time $t$. One method to achieve this is qPCR methods which allow measurement at $t$ to render same-day information. However, this technique costs between 2 to 5 times more than traditional culture-based methods. With limited resources, it may not be feasible for recreational water managers to afford a deployment at all available locations.
+The hybrid model relies on the observed correlation of bacteria level between beaches `r citet(biblio["whitman_summer_2008"])`. Bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. It is therefore possible to use selected sampling at each beach to infer bacteria levels at other beaches were sampling was not available.
 
 (Figure showing relationship between beaches)
 
-Second, we propose that is possible to leverage qPCR measurements at select beaches to determine bacteria levels that did not have qPCR testing. `r citet(biblio["whitman_summer_2008"])` noted that bacteria levels often flucuate which each other on the same day. Often, extreme highs and extreme lows were simultaneous for most beaches.
-
-Hybrid modeling uses selected observations ($x_i^t$) from today $t$ using qPCR testing at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$.
-
-The key difference is using information at time $t$ to predict . Recall, prior-day models relied on using information for $t-1$ to predict levels at time $t$ because collection at $t$ is not avialable until later, $t+1$.
+Hybrid modeling uses selected observations ($x_i^t$) from today $t$ at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$. In order to derive the predictions, we first detemine clusters, $J(c_k)$ of beaches which have similar bacteria levels. Each cluster contains at least one beach which is sampled each day while the rest of the beaches are not. Then, we use machine learning techniques to derive predictions for each beach based on qPCR data.
 
 Hybrid models attempt to recast the research into a missing value problem. That is, from a research perspective, use information from the observed beaches to "fill-in" the data. Missing-value problems are common and often tackled in statistics in a variety of ways. For example, researchers can "fill-in" responses to surveys that were left partially blank. The general approach to missing-value problems is using observed correlations to fill-in missing values. 
 
-In the context of beaches, we can leverage the historical, observed correlations between $x_i$ and $y_i$ and then leverage today's observations from qPCR testing, $x_i^t$ to "fill-in" beaches that do not have qPCR testing, $y_i^t$. Because it uses data from the same period, we suspect it is less susceptible to the problems that cause prior-day forecasting to be less reliable.
 
-
-## Identifying Beach Clusters
+### Identifying Beach Clusters
 
 We used clustering techniques to determine groups of beaches that tend to move in tandem. Specifically, identify beaches where bacteria levels and advisories are correlated with each other. We used K-means clustering algorithm to detect when beaches have similar movements. 
 
@@ -138,7 +127,7 @@ Within each cluster, the beach with the most E. coli exceedances was selected fo
 |                 |       Rogers      |
 |                 |       Jarvis      |
 
-## Building the Predictive Model
+### Building the Predictive Model
 
 A random forest regression model was trained with the following features: the predicted beach's name and culture-based results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
@@ -152,7 +141,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes. 
 
-## Validating the Algorithm - Summer 2017
+### Validating the Algorithm - Summer 2017
 
 The analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. Within machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to existing data and then fail to predict when data has not already been accounted for.
 
@@ -184,6 +173,7 @@ Nevertheless, the hybrid model still failed to identify days with elevated level
 
 # References
 
+[^1]: By analogy, ensemble modeling is akin to asking a panel of experts instead of relying on a single expert.
 
 ```{r references, echo=FALSE, message=FALSE}
 write.bibtex(file="bibliography.bib")
