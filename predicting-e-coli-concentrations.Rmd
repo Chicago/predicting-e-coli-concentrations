@@ -32,9 +32,9 @@ options("citation_format" = "pandoc")
 
 # Introduction
 
-Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models to estimate water quality conditions for the day. These models account for the past trend at the beaches and other factors such as precipitation, wind, and water conditions.
+Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but despite those effort, results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often changes so the water sample is not relevant to todays beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models to estimate water quality conditions for the day `r citep(biblio["francy_developing_2013"])`. These models account for the past trend at the beaches and other factors such as precipitation, wind, and water conditions.
 
-Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II errors or "false negatives") `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. In 2015, Chicago beaches had 200 events where bacteria levels were too high; however, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
+Yet, these models usually do not correctly identify days with elevated bacteria levels (known as Type II errors or "false negatives") `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. For instance in 2015, Chicago beaches had 200 events where bacteria levels were too high; however, only 13 (6.5%) of these events were forcasted by the predictive model. As we will discuss, these models do have good overall fit, but elevated bacteria levels are statistically rare events and models often fail to predict them.
 
 Meanwhile, scientists have developed new methods which measure bacteria levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine bacteria levels within a 3 to 4 hours and yield similar results as culture-based methods `r citep(biblio[c("haugland_comparison_2005","kinzelman_enterococci_2003")])`.
 
@@ -52,29 +52,34 @@ We find that the hybrid model is more accurate and consistent between seasons. U
 
 Timing is a crucial factor for monitoring baacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
 
-## Prior-day Model
+## Prior-day Nowcast Model
 
-Researchers have developed forecasting models using prior bacteria testing results at beaches and other available data such as precipitation `r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])`, sunlight `r citep(biblio["whitman_solar_2004"])`, wind `r citep(biblio[c("smith_effect_1999", "olyphant_elements_2004")])`, wave and tital `r citep(biblio[c("le_fevre_role_2003", "crowther_relationships_2001")])`, and turbidity `r citep(biblio["olyphant_characterization_2003"])`, and density of humans and animals `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`.
+Researchers have developed forecasting models using prior bacteria testing results at beaches and other available data such as precipitation `r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])`, sunlight `r citep(biblio["whitman_solar_2004"])`, wind `r citep(biblio[c("smith_effect_1999", "olyphant_elements_2004")])`, wave and tital levels `r citep(biblio[c("le_fevre_role_2003", "crowther_relationships_2001")])`, lake levels `r citep(biblio["francy_testing_2009"])` and turbidity `r citep(biblio["olyphant_characterization_2003"])`, and density of humans and animals `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`.
 
-These models rely on prior-day data since culture-based testing is not available until upward of 12 hours after the samples were collected. The prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$.
-
-These models often take the form of
+These models rely on prior-day data since culture-based testing is not available until upward of 12 hours after the samples were collected. The prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$. These models often take the form of
 
 $$ x_i^t = f(x_i^{t-1}, w_1, w_2, ..., w_j) $$
 
 where $f(...)$ is a some function or algorithm that inputs raw data and outputs a probability. For instance, the linear regression model is typically $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$, where $\beta_j$ are the coefficients that weight the importance of each input. But, models often use log transformations `r citep(biblio["nevers_nowcast_2005"])`, polynomial coefficients `r citep(biblio["frick_nowcasting_2008"])`, logistic regression, partial least squares `r citep(biblio["hou_enterococci_2006"])`, generlized boosted regression modeling `r citep(biblio["cyterski_virtual_2014"])`, random forest and genetic algorithm approaches `r citep(biblio["brooks_predicting_2016"])`. These class of models often have the same structure of using predictions from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
 
-
-
-## Existing Methodology
-
-From 2006 to 2016, the Chicago Park District uses a model developed by the U.S. Geological Survey and Michigan State University to forecast whether bacteria levels will be elevated at Chicago beaches on Lake Michigan...
+`r citet(biblio["shively_prototypic_2016"])` implemented a model which automatically collected covariates on water and atmospheric conditions (e.g., water temperature, turbidity) through hydrometeorological sensors placed in the water and on shore. This technology allowed automated "nowcasts" of beaches to rely on prior-day bacteria levels and current water and atmospheric conditions. Moreover, it allowed the automation of forecasts based on available data.
 
 # Statistical Models
 
+## Existing Methodology
+
+One of the first automated prior-day nowcast models was developed by `r citet(biblio["shively_prototypic_2016"])`. Between 2011 and 2016, Chicago Park District teamed with scientists to use this model to forecast elevated bacteria levels in Lake Michigan. It used air and water sensors to estimate the covariates, $w_i$, that indicate future levels of bacteria and culture-based measurements of bacteria for the previous day, $x_{t-1}$.
+
+Buoys were installed at five Chicago beaches--Foster, Montrose, Oak, 63rd, and Calumet--to collect turbidity, wave height, wave period, water temperature, and depth of the sensor. Weather stations were installed at three beaches--Foster, Oak, and 63rd--and collected wind direction, wind speed, air temperature, rainfall, solar radiation, relative hunidity, and barometric pressure. Data was collected from the hydrometeorological sensors between every 2 and 5 minutes through the summer and aggregated.
+
+Similar to other models discussed, it uses a multivariate model between covariates and the log of _E. coli_ measured at each beach. The authors used a regression tree to determine the factors that portend elevated _E. coli_ levels. Once predictions were obtained, they were published online for beach visitors and archived online (Should reference CPD website and data portal).
+
 ## Ensemble Modeling
 
-Typically, previous research has only explored one of the above models or compared individual models `r citep(biblio["brooks_predicting_2016"])`. In this section, we explore various different "prior-day" models and use ensemble modeling techniques to combine various statistical and machine-learning models. Ensemble models allows two or more models to be combined to yield predictions. This allows weaknesses from any single model to be mollified by other statistical models. Often, this yields better and more stable predictions.[^1]
+Typically, previous research has only explored one of the above models or compared individual models `r citep(biblio["brooks_predicting_2016"])`. In this section, we explore various different prior-day nowcast models and use ensemble modeling techniques to combine various statistical and machine-learning models. Ensemble models allows two or more models to be combined to yield predictions. This allows weaknesses from any single model to be mollified by other statistical models. Often, this yields better and more stable predictions.[^1]
+
+...
+
 
 ## Hybrid Model
 
@@ -112,7 +117,7 @@ The remaining four clusters were reanalyzed using 5-cluster k-means with the sam
 |           |              |   Jarvis  |           |             |
 
 
-Within each cluster, the beach with the most E. coli exceedances was selected for use as a model feature. The remaining beaches were selected to be predicted by the model.
+Within each cluster, the beach with the most _E. coli_ exceedances was selected for use as a model feature. The remaining beaches were selected to be predicted by the model.
 
 | Feature Beaches | Predicted Beaches |
 |-----------------|-------------------|
@@ -164,10 +169,6 @@ Meanwhile, the false positive rate was slightly higher at 2.0 percent during 201
 In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. While we cannot directly compare it to the USGS model, in 2016 that model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, there were 14 correct advisories versus 184 incorrect advisories.
 
 Nevertheless, the hybrid model still failed to identify days with elevated levels; the false negative rate. (How many??)
-
-
-
-# Open Science
 
 # Summary
 
