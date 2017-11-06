@@ -50,7 +50,7 @@ We find that the hybrid model is more accurate and consistent between seasons. U
 
 # Background
 
-Timing is a crucial factor for monitoring baacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
+Timing is a crucial factor for monitoring bacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
 
 ## Prior-day Nowcast Model
 
@@ -140,15 +140,15 @@ Historically, the USGS model from 2006 through 2016 had a false-positive rate of
 
 Figure 2 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days we falsely identify elevated levels. By constraining our model to only have a 1.8 percent false-positive rate, our true positive rate is forecasted to be 22 percent.
 
-![Receiever Operating Characteristic (ROC) Plot for Hybrid Model. Tuned and validated on data from 2006 - 2015. Final validation on 2016 data.](img/ROC.png)
+![Receiever Operating Characteristic (ROC) Plot for hybrid model. Tuned and validated on data from 2006 - 2015. Final validation on 2016 data.](img/ROC.png)
 
-A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.5%, the threshold within each year that corresponded to a 1.5% FPR was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
+A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.8 percent, the threshold within each year that corresponded to a 1.8 percent was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
 
 In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes. 
 
 ### Validating the Algorithm - Summer 2017
 
-The analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. Within machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to existing data and then fail to predict when data has not already been accounted for.
+The pilot analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data.
 
 Using the training data through 2016, we used the summer of 2017 to predict elevated levels and then measure the accuracy at the end of the season. This provided the same scenario as beach forecasting models: read the most recent data, formulate a prediction, collect water samples, and then compare the predictions to the collected samples. 
 
@@ -156,19 +156,22 @@ qPCR measurements from 5 beaches: Calumet, Rainbow, Sourth Share, 63rd, and Mont
 
 Both predictions and samples were collected each day during the week. This process was different from prior years where samples were usually collected only during weekdays and non-holidays except when levels had been elevated on the previous Friday or was suspected to be a busy weekend on the beaches.
 
-In summer 2017, the model concept was piloted with some limitations imposed by available data... (let's specify this)
+To translate the predicted E. coli level to an advisory decision, the threshold level used to validate the original model was used (381 CFU/100ml). Table 1 shows the confusion matrix for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). 
 
-Table XX shows the truth table for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above XXXX amount). 
+2017 Pilot | Predicted Elevated | Predicted Normal
+---|---|---
+Actual Elevated | 9 (11.2%) | 71 (88.8%) |
+Actual Normal | 24 (2.0%) | 1186 (98.0%) |
 
-Over the summer, the analytical model had a true positive rate of 11.2 percent compared to a true positive rate of 3.2 percent in 2016. Over the past decade, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 239 percent over the historical average.
+Table 1
 
-Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Our target rate was 1.5 percent to remain consistent with prior summers. Though higher than desired, the previous model had a false rate of 2 percent or higher (how many times out of the past 10 years??).
+Over the summer, the analytical model had a true positive rate of 11.2 percent compared to a true positive rate of 3.2 percent in 2016. From 2015 through 2016, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 239 percent over the historical average. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Our target rate was 1.8 percent to remain consistent with prior summers. 
 
-(HISTORICAL GRAPH OF ACTUAL TPR/FPR LEVELS FOR USGS AND HYBRID MODEL)
+![Historical TPR and FPR for prior-day models and the 2017 pilot of hybrid model.](img/evaluation.jpeg)
 
-In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. While we cannot directly compare it to the USGS model, in 2016 that model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, there were 14 correct advisories versus 184 incorrect advisories.
+In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. While we cannot directly compare it to the prior-day models, in 2016 that model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the prior-day model issued 14 correct advisories versus 184 incorrect advisories.
 
-Nevertheless, the hybrid model still failed to identify days with elevated levels; the false negative rate. (How many??)
+Nevertheless, the hybrid model identified 24 days as having elevated levels, when the actual bacterial level was normal.
 
 # Summary
 
