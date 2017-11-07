@@ -85,7 +85,7 @@ Typically, previous research has only explored one of the above models or compar
 
 The proposed hybrid model relies on the observed correlation of bacteria level between beaches, as suggested by `r citet(biblio["whitman_summer_2008"])`. Bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches (figure 1). It is therefore possible to use selected sampling at each beach to infer bacteria levels at other beaches were sampling was not available.
 
-![Chicago Beaches often fluctuate with each other.](img/beach-relationship.png)
+![Chicago Beaches often fluctuate with each other. The dotted line represents the typical beach advisory decision threshold (235 CFU/100ml)](img/beach-relationship.png)
 
 Hybrid modeling uses selected observations ($x_i^t$) from today $t$ at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels $y_i^t$ at other ($m$) beaches: $Y^t: y_1^t, y_2^t, ..., y_m^t$. In order to derive the predictions, we first detemine clusters, $J(c_k)$ of beaches which have similar bacteria levels. Each cluster contains at least one beach to be sampled each day while the rest of the beaches are not. Then, we use machine learning techniques to derive predictions for each beach based on qPCR data.
 
