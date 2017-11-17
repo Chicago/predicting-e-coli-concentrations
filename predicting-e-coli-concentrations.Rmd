@@ -1,7 +1,10 @@
 ---
 title: Predicting E. coli concentrations using limited qPCR deployments at Chicago
   beaches
-author: "Nick Lucius, many more and Tom Schenk Jr."
+author: 
+ - Nick Lucius
+ - Many more...
+ - Tom Schenk Jr.
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 output:
   pdf_document:
