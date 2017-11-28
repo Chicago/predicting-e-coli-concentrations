@@ -76,23 +76,23 @@ Similar to other models discussed, it used a multivariate model between covariat
 
 # Hybrid Nowcast Model
 
-`r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches (figure 1). It is therefore possible to use selected sampling at each beach to infer bacteria levels at other beaches were sampling was not available. 
+`r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
+
+Prior-day Nowcast models used simultaneous measures of the previous day _E. coli_ levels. Limited deployments of qPCR testing, however, means some beach data could be available before other culture-based testing are completed. We use available qPCR data to denote "feature beaches" to use _E. coli_ readings to predict bacteria levels at other beaches based on past correlation.
 
 ![Chicago Beaches often fluctuate with each other. The dotted line represents the logarithm of the typical beach advisory decision threshold (235 CFU/100ml)](img/beach-relationship.png)
 
-Hybrid modeling uses selected qPCR readings ($x_i^t$) from today $t$ at some ($n$) beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels ($y_i^t$) at other ($m$) beaches that do not have any _E. coli_ readings: $Y^t: y_1^t, y_2^t, ..., y_m^t$. In order to derive the predictions, we first detemine clusters, $J(c_k)$ of beaches which have similar bacteria levels. Each cluster contains at least one beach to be sampled each day while the rest of the beaches are not. Then, we use machine learning techniques to derive predictions for each beach based on qPCR data.
-
-This hybrid model attempts to recast the research into a missing value problem. That is, from a research perspective, use information from the observed beaches to "fill-in" the data. Missing-value problems are common and often tackled in statistics in a variety of ways. For example, researchers can "fill-in" responses to surveys that were left partially blank. The general approach to missing-value problems is using observed correlations to fill-in missing values. 
+We use selected qPCR readings ($x_i^t$) from today $t$ at feature beaches, that is $X^t: x_1^t, x_2^t, ..., x_n^t$, to forecast bacteria levels ($y_i^t$) at other ($m$) beaches that do not have any _E. coli_ readings: $Y^t: y_1^t, y_2^t, ..., y_m^t$. The number of feature beaches ($n$) does not need to equal the number of predicted beaches ($m$). Only one feature beach is needed to predict one or more beaches in the same cluster, that is, $n \leq m$. 
 
 ## Identifying Beach Clusters
 
-We used clustering techniques to determine groups of beaches that tend to move in tandem. Specifically, we identified beaches where bacteria levels and advisories are correlated with each other. We used K-means clustering algorithm to detect when beaches have similar movements. 
+Given a number of desired clusters ($k$), the objective is to group feature beaches ($x_i^t$) with a cluster of other beaches ($y_i^t$) together that are correlated and have similar characteristics. The result is $k$ number of clusters with memberships of $k: \{ x_{1 \in k}^t, y_{1 \in k}^t, y_{2 \in k}^t, ..., y_{m \in k}^t \}$. Each cluster consists of the feature beach, $x_{i \in k}^t$, to predict the values at the other beaches in the cluster, $y_{i \in k}^t$.
 
-Given a number of desired clusters ($k$), the objective is to group a beach ($i$) with a cluster of other beaches ($B_k$) together that minimize the sum of squares. Mathematically:
+We used K-means near clustering algorithm to detect when beaches have similar movements. First, there is an initial, random guess for which beaches belong in clusters. The distance or error is then measured for all clusters. Then, membership of clusters is slightly altered, the error is then measured and determined if the error is increasing or decreasing. This process is repeated until the lowest measured error is obtained.
 
-$$ J(c_k) = \sum_{i=1}^{k} \sum_{x_i \in B_k} ||x_i - \mu_k||^2 $$
+Mathematically:
 
-This algorithm cannot be solved as a closed-form solution. First, there is an initial, random guess for which beaches belong in clusters. The distance or error is then measured, $x_i - \mu_k$ for all clusters. Then, membership of clusters is slightly altered, the error is then measured and determined if the error is increasing or decreasing. This process is repeated until the lowest measured error is obtained.
+$$ J(x_k, y_k) = \sum_{i=1}^{k} \sum_{x_i \in B_k} ||x_i - \mu_k||^2 $$
 
 We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Parks District. K-means was applied to beaches based on latitude, longitude, total E. coli exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
 
@@ -115,7 +115,7 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 ## Building the Predictive Model
 
-A random forest regression model was trained with the following features: the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. The model was fit to predict the culture-based result for the predicted beach on the same day. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
+A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
 Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 2 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days we provide unnecessary warnings to beach-goers.
 
@@ -174,6 +174,13 @@ This approach can be valuable for recreational beach systems which have several 
 
 Not all beach systems may exhibit correlation between beaches over time. Each recreational beach network would need to explore the historical correlation between beaches and determine if there are any beach clusters. In Chicago, correlation between beaches decreased with distance between beaches and some beaches, because of physical features, were not strongly correlated with other beaches.
 
+# Acknowledgements
+
+We are indebted to Chicago Park District staff, including Cathy Breitenbach and Carol Kim, who provided incredible guidance and feedback while taking time to work with the research team. Meredith Nevers garciously provided the research team with her considerable expertise that was invaluable. We are also grateful for all of the volunteers from ChiHackNight who helped conduct some of the analysis. Finally, we wish to thank the attendees of State of Lake Michigan conference in 2017 for their questions and comments.
+
+# Supplementary Materials
+
+Source code for the statistical model is available at XXXXXX. Raw data from beach readings (XXXXX) and historical forecasts generated by the hybrid nowcast model (XXXXX) are publicly available and updated during the beach season. We encourage others to review all the data and code and appreciate any feedback, notes, or suggestions for improvement.
 
 # References
 
