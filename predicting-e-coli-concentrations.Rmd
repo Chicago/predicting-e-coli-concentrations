@@ -115,11 +115,37 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 ## Building the Predictive Model
 
-A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
+A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (See Figure 2). The most important feature was the E. coli level at Leone Beach. In fact, the importance of each beach's E. coli level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 2 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days we provide unnecessary warnings to beach-goers.
+![Variable Importance Plot.](img/importance-plot.png)
 
-Figure 2 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
+|         Variable          | Percent Increase in MSE |
+|---------------------------|-------------------------|
+|        Beach Name         |          15.56          |   
+|   Foster E. coli Level    |          43.48          |   
+| North Avenue E. coli Level|          29.32          |   
+|    31st E. coli Level     |          27.46          |   
+|    Leone E. coli Level    |          43.73          |   
+| South Shore E. coli Level |          21.34          |   
+
+Table 2: Variable Importance.
+
+The name of the beach being predicted had the lowest importance. Without this predictor, the predicted E. coli for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
+
+The random forest regression model fit predicted E. coli levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision, as explained below. A plot of the log of the raw fitted values vs. residuals shows random variation as seen in Figure 3, suggesting a good model fit without unexpected patterns. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
+
+![Fitted values vs. Residuals](img/residual-vs-fitted.png)
+
+As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees, as shown in Figure 4.
+
+![Model error decreases as the number of trees grow, until around 400 trees.](img/tree-growth.png)
+
+
+The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
+
+Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 5 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days we provide unnecessary warnings to beach-goers.
+
+Figure 5 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
 
 ![Receiever Operating Characteristic (ROC) Plot for hybrid model.](img/ROC.png)
 
@@ -144,9 +170,9 @@ To translate the predicted E. coli level to an advisory decision, the threshold 
 | Actual Elevated |     9 (11.2%)      |    71 (88.8%)    | 
 | Actual Normal   |     24 (2.0%)      |   1,186 (98.0%)  |
 
-Table 2: Hybrid model 2017 pilot results.
+Table 3: Hybrid model 2017 pilot results.
 
-Over the summer, the analytical model had a true positive rate of 11.2 percent compared to a true positive rate of 3.2 percent in 2016 (Table 2). From 2015 through 2016, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 250 percent over the historical average. 
+Over the summer, the analytical model had a true positive rate of 11.2 percent compared to a true positive rate of 3.2 percent in 2016 (Table 4). From 2015 through 2016, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 250 percent over the historical average. 
 
 ![Historical TPR and FPR for Chicago prior-day models and the 2017 pilot of hybrid model.](img/evaluation.jpeg)
 
@@ -160,7 +186,7 @@ Overall, accuracy of the hybrid nowcast model is in line with the previous perfo
 | 2016 Prior-day  |    98.9%    |    3.7%     |  93.0%   |
 | 2015 Prior-day  |    98.4%    |    3.2%     |  89.4%   |
 
-Table 3: Comparing specificity, sensitivity, and accuracy between Hybrid and Prior-day Nowcast Models.
+Table 4: Comparing specificity, sensitivity, and accuracy between Hybrid and Prior-day Nowcast Models.
 
 Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Our target rate was 1.8 percent to remain consistent with prior summers, but specificity (true negative rate) fell slightly. In total, the hybrid model identified 24 days as having elevated levels, when the actual bacterial level was normal.
 
