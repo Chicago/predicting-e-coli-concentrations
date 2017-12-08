@@ -12,24 +12,32 @@ abstract: |
   EPA approval of enterococci quantitative PCR (qPCR) methods allows for testing that is available within 3 hours, eschewing the need for predictive models. Unfortunately, these “rapid testing” methods are 100% to 400% more expensive than culture-based methods.
 
   This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using data from Chicago, we find that the approach would have issued accurate advisories for 90 poor water quality “beach days” compared to 15 advisories issued by the previous model. The accuracy of the model rose from 3.2% to 11.2%--a 250% increase.
+always_allow_html: yes
 output:
   pdf_document:
     number_sections: yes
   html_document:
     number_sections: yes
   word_document: default
+  
 bibliography: zotero-references.bib
 ---
 
-```{r setup_environment, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r setup_environment, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
 ## Install necessary packages
 
 library(knitr)
 library(knitcitations)
+library(heatmaply)
+library(data.table)
 
 ## Read bibliography
 biblio <- read.bibtex("zotero-references.bib")
 options("citation_format" = "pandoc")
+
+## Read data for tables / graphs
+setwd(paste0(getwd(), "/clear-water"))
+source("Master.R")
 
 
 ```
@@ -86,8 +94,19 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
+```{r correlation_heatmap, echo=FALSE, fig.height=10, fig.width=12}
 
-![Chicago Beaches often fluctuate with each other. The dotted line represents the logarithm of the typical beach advisory decision threshold (235 CFU/100ml)](img/beach-relationship.png)
+## Generate Correlation Heatmap of Beaches
+
+dt <- data.table(df)
+beachCor <- dcast(dt, Date ~ Client.ID, fun.aggregate = mean, value.var = "Escherichia.coli")
+beachCor <- na.omit(beachCor)
+beachCor <- log(beachCor[,c(2:21)])
+corTable <- cor(beachCor)
+corTable <- round(corTable, 2)
+heatmaply_cor(corTable, colors = Greys)
+```
+
 
 Beaches are not uniformally correlated. Some beaches display strong clusters of correlation that exceed the correlation of bacteria readings within the same beach between days. By using strategic qPCR readings at selected beaches, we will be able to determine bacteria levels at other beaches.
 
