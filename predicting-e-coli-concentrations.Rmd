@@ -30,6 +30,7 @@ library(knitr)
 library(knitcitations)
 library(heatmaply)
 library(data.table)
+webshot::install_phantomjs()
 
 ## Read bibliography
 biblio <- read.bibtex("zotero-references.bib")
@@ -38,8 +39,6 @@ options("citation_format" = "pandoc")
 ## Read data for tables / graphs
 setwd(paste0(getwd(), "/clear-water"))
 source("Master.R")
-
-
 ```
 
 # Introduction
@@ -94,7 +93,7 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
-```{r correlation_heatmap, echo=FALSE, fig.height=10, fig.width=12}
+```{r correlation_heatmap, echo=FALSE, fig.height=10, fig.width=12, results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
@@ -104,7 +103,8 @@ beachCor <- na.omit(beachCor)
 beachCor <- log(beachCor[,c(2:21)])
 corTable <- cor(beachCor)
 corTable <- round(corTable, 2)
-heatmaply_cor(corTable, colors = Greys)
+heatmaply_cor(corTable, file = "img/correlation-heatmap.png")
+file.remove("img/correlation-heatmap.png")
 ```
 
 
@@ -156,7 +156,11 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (See Figure 2). The most important feature was the E. coli level at Leone Beach. In fact, the importance of each beach's E. coli level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-![Variable Importance Plot.](img/importance-plot.png)
+#variable importance plot
+
+```{r variable_importance, echo=FALSE, fig.height=10, fig.width=12, results='hide', message=FALSE, warning=FALSE}
+varImpPlot(model, main = "", type=1)
+```
 
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted E. coli for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
 
