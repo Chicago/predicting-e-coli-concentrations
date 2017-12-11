@@ -156,9 +156,9 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (See Figure 2). The most important feature was the E. coli level at Leone Beach. In fact, the importance of each beach's E. coli level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-#variable importance plot
+```{r variable_importance, echo=FALSE, fig.height=8, fig.width=8, results='hide', message=FALSE, warning=FALSE}
+file:///U:/.ssh/config
 
-```{r variable_importance, echo=FALSE, fig.height=10, fig.width=12, results='hide', message=FALSE, warning=FALSE}
 varImpPlot(model, main = "", type=1)
 ```
 
