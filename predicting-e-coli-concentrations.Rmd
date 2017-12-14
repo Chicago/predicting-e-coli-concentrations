@@ -3,7 +3,12 @@ title: Predicting E. coli concentrations using limited qPCR deployments at Chica
   beaches
 author: 
  - Nick Lucius
- - Many more...
+ - Kevin Rose, Chi Hack Night
+ - Callin Osborn
+ - Matt E Sweeney, Chi Hack Night
+ - Renel Chesak
+ - Daniel Y. Little, Chi Hack Night
+ - Scott Beslow, Chi Hack Night
  - Tom Schenk Jr.
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
@@ -26,10 +31,13 @@ bibliography: zotero-references.bib
 ```{r setup_environment, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
 ## Install necessary packages
 
-library(knitr)
-library(knitcitations)
-library(heatmaply)
 library(data.table)
+library(heatmaply)
+library(ggthemes)
+library(gridExtra)
+library(knitcitations)
+library(knitr)
+library(ROCR)
 webshot::install_phantomjs()
 
 ## Read bibliography
@@ -39,6 +47,51 @@ options("citation_format" = "pandoc")
 ## Read data for tables / graphs
 setwd(paste0(getwd(), "/clear-water"))
 source("Master.R")
+
+## Set theme for plots (by Koundinya Desiraju)
+## https://rpubs.com/Koundy/71792
+theme_Publication <- function(base_size=14, base_family="sans") {
+      library(grid)
+      library(ggthemes)
+      (theme_foundation(base_size=base_size, base_family=base_family)
+       + theme(plot.title = element_text(face = "bold",
+                                         size = rel(1.2), hjust = 0.5),
+               text = element_text(),
+               panel.background = element_rect(colour = NA),
+               plot.background = element_rect(colour = NA),
+               panel.border = element_rect(colour = NA),
+               axis.title = element_text(face = "bold",size = rel(1)),
+               axis.title.y = element_text(angle=90,vjust =2),
+               axis.title.x = element_text(vjust = -0.2),
+               axis.text = element_text(), 
+               axis.line = element_line(colour="black"),
+               axis.ticks = element_line(),
+               panel.grid.major = element_line(colour="#f0f0f0"),
+               panel.grid.minor = element_blank(),
+               legend.key = element_rect(colour = NA),
+               legend.position = "bottom",
+               legend.direction = "horizontal",
+               legend.key.size= unit(0.2, "cm"),
+               legend.margin = unit(0, "cm"),
+               legend.title = element_text(face="italic"),
+               plot.margin=unit(c(10,5,5,5),"mm"),
+               strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+               strip.text = element_text(face="bold")
+          ))
+      
+}
+
+scale_fill_Publication <- function(...){
+      library(scales)
+      discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
+
+scale_colour_Publication <- function(...){
+      library(scales)
+      discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+
+}
 ```
 
 # Introduction
@@ -156,8 +209,16 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (See Figure 2). The most important feature was the E. coli level at Leone Beach. In fact, the importance of each beach's E. coli level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-```{r variable_importance, echo=FALSE, fig.height=8, fig.width=8, results='hide', message=FALSE, warning=FALSE}
-varImpPlot(model, main = "", type=1)
+```{r variable_importance, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
+varImp <- importance(model, main = "", type=1)
+varImp <- data.frame("Beach" = row.names(varImp),
+                     "PercentIncreaseMSE" = varImp[,1])
+varImp$Beach <- factor(varImp$Beach, levels = varImp$Beach[order(varImp$PercentIncreaseMSE)])
+p <- ggplot(varImp) + 
+  geom_col(aes(Beach, PercentIncreaseMSE)) 
+grid.arrange((p + scale_fill_Publication() + theme_Publication()) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) ,nrow=1)
+
 ```
 
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted E. coli for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
@@ -174,7 +235,49 @@ Historically, the Chicago prior-day model from 2015 through 2016 had a false-pos
 
 Figure 5 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
 
-![Receiever Operating Characteristic (ROC) Plot for hybrid model.](img/ROC.png)
+```{r ROC, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
+## build USGS ROC
+
+dfSelected <- df[df$Client.ID %in% c(
+  "12th",
+  "39th",
+  "57th",
+  "Albion",
+  "Howard",
+  "Jarvis",
+  "Juneway",
+  "Oak Street",
+  "Osterman",
+  "Rogers"
+),]
+
+usgs <- dfSelected[!is.na(dfSelected$Escherichia.coli) & 
+                     !is.na(dfSelected$Predicted.Level),
+                   c("Escherichia.coli","Predicted.Level")]
+names(usgs) <- c("actual","predicted")
+usgs$actualBin <- ifelse(usgs$actual < 235, 0, 1)
+
+pred <- prediction(usgs$predicted, usgs$actualBin)
+perf <- performance(pred, "tpr", "fpr")
+usgsROC <- data.frame(fpr = unlist(perf@x.values),
+                       tpr = unlist(perf@y.values))
+
+## plot hybrid and usgs ROC together
+
+p <- ggplot() + 
+  geom_line(aes(x = model_summary$fpr, y = model_summary$tpr, color = "Hybrid Model")) + 
+  geom_line(aes(x = usgsROC$fpr, y = usgsROC$tpr, color = "Prior-day Model")) +
+  ylim(0,1) + 
+  xlim(0,1) + 
+  xlab("False Positive Rate") +
+  ylab("True Positive Rate") +
+  geom_vline(xintercept = .018, linetype = "dashed") +
+  scale_colour_manual("", 
+                      breaks = c("Hybrid Model", "Prior-day Model"),
+                      values = c("#386cb0","#fdb462")) 
+grid.arrange((p + theme_Publication()),nrow=1)
+```
+
 
 A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.8 percent, the threshold within each year that corresponded to a 1.8 percent was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
 
