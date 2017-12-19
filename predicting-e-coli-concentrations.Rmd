@@ -35,6 +35,7 @@ library(data.table)
 library(heatmaply)
 library(ggthemes)
 library(gridExtra)
+library(gtable)
 library(knitcitations)
 library(knitr)
 library(ROCR)
@@ -54,6 +55,7 @@ labs$DNA.Sample.Timestamp <- strftime(labs$DNA.Sample.Timestamp, format = "%Y-%m
 
 ## Set theme for plots (by Koundinya Desiraju)
 ## https://rpubs.com/Koundy/71792
+
 theme_Publication <- function(base_size=14, base_family="sans") {
       library(grid)
       library(ggthemes)
@@ -76,7 +78,6 @@ theme_Publication <- function(base_size=14, base_family="sans") {
                legend.position = "bottom",
                legend.direction = "horizontal",
                legend.key.size= unit(0.2, "cm"),
-               legend.margin = unit(0, "cm"),
                legend.title = element_text(face="italic"),
                plot.margin=unit(c(10,5,5,5),"mm"),
                strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
@@ -96,6 +97,8 @@ scale_colour_Publication <- function(...){
       discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
 
 }
+
+gridTheme <- ttheme_minimal()
 ```
 
 # Introduction
@@ -150,12 +153,12 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
-```{r correlation_heatmap, echo=FALSE, fig.height=10, fig.width=12, results='hide', message=FALSE, warning=FALSE}
+```{r correlation_heatmap, echo=FALSE, fig.height=10, fig.width=12, fig.align='center', results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
-dt <- data.table(df)
-beachCor <- dcast(dt, Date ~ Client.ID, fun.aggregate = mean, value.var = "Escherichia.coli")
+corHeatData <- data.table(df)
+beachCor <- dcast(corHeatData, Date ~ Client.ID, fun.aggregate = mean, value.var = "Escherichia.coli")
 beachCor <- na.omit(beachCor)
 beachCor <- log(beachCor[,c(2:21)])
 corTable <- cor(beachCor)
@@ -164,6 +167,7 @@ heatmaply_cor(corTable, file = "img/correlation-heatmap.png")
 file.remove("img/correlation-heatmap.png")
 ```
 
+Figure 1: Correlation heat map of Chicago beaches.
 
 Beaches are not uniformally correlated. Some beaches display strong clusters of correlation that exceed the correlation of bacteria readings within the same beach between days. By using strategic qPCR readings at selected beaches, we will be able to determine bacteria levels at other beaches.
 
@@ -213,33 +217,51 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (See Figure 2). The most important feature was the E. coli level at Leone Beach. In fact, the importance of each beach's E. coli level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-```{r variable_importance, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
-varImp <- importance(model, main = "", type=1)
-varImp <- data.frame("Beach" = row.names(varImp),
-                     "Percent_Increase_MSE" = varImp[,1])
-varImp$Beach <- factor(varImp$Beach, levels = varImp$Beach[order(varImp$Percent_Increase_MSE)])
-p <- ggplot(varImp) + 
-  geom_col(aes(Beach, Percent_Increase_MSE)) 
-grid.arrange((p + scale_fill_Publication() + theme_Publication()) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) ,nrow=1)
+```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', results='hide', message=FALSE, warning=FALSE}
+varImpData <- importance(model, main = "", type=1)
+
+## clean/style names for easier reading
+variableNames <- row.names(varImpData)
+variableNames <- vapply(variableNames, function(x){
+  switch(x,
+         "Client.ID" = "Beach",
+         "Foster_Escherichia.coli" = "Foster E. coli",
+         "North_Avenue_Escherichia.coli" = "North E. coli",
+         "n31st_Escherichia.coli" = "31st E. coli",
+         "Leone_Escherichia.coli" = "Leone E. coli",
+         "South_Shore_Escherichia.coli" = "South Shore E. coli"
+         )
+}, "")
+row.names(varImpData) <- variableNames
+
+varImpData <- data.frame("Variable" = row.names(varImpData),
+                         varImpData[,1])
+colnames(varImpData)[2] <- "Percent Increase MSE"
+varImpData$Variable <- factor(varImpData$Variable, levels = varImpData$Variable[order(varImpData$`Percent Increase MSE`)])
+varImpPlot <- ggplot(varImpData) + 
+  geom_col(aes(Variable, `Percent Increase MSE`)) 
+grid.arrange((varImpPlot + scale_fill_Publication() + theme_Publication()) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)), nrow=1)
 
 ```
 
+Figure 2: Variable Importance.
+
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted E. coli for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
 
-The random forest regression model fit predicted E. coli levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision, as explained below. A plot of the log of the raw fitted values vs. residuals shows random variation as seen in Figure 3, suggesting a good model fit without unexpected patterns. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
+The random forest regression model fit predicted E. coli levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision, as explained below. A plot of the log of the raw fitted values vs. residuals shows random variation as seen in Figure S1, suggesting a good model fit without unexpected patterns. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
 
-As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees, as shown in Figure 4.
+As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees, as shown in Figure S2.
 
 ## Validation
 
 The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
-Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 5 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days we provide unnecessary warnings to beach-goers.
+Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 3 shows, we could increase the number of times we correctly predict elevated bacteria levels, but it comes at a cost of also increasing the number of days we provide unnecessary warnings to beach-goers.
 
-Figure 5 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
+Figure 3 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
 
-```{r ROC, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
+```{r ROC, echo=FALSE, fig.height=4.25, fig.width=4, fig.align='center', results='hide', message=FALSE, warning=FALSE}
 ## build USGS ROC
 
 dfSelected <- df[df$Client.ID %in% c(
@@ -268,7 +290,7 @@ usgsROC <- data.frame(fpr = unlist(perf@x.values),
 
 ## plot hybrid and usgs ROC together
 
-p <- ggplot() + 
+rocPlot <- ggplot() + 
   geom_line(aes(x = model_summary$fpr, y = model_summary$tpr, color = "Hybrid Model")) + 
   geom_line(aes(x = usgsROC$fpr, y = usgsROC$tpr, color = "Prior-day Model")) +
   ylim(0,1) + 
@@ -279,9 +301,10 @@ p <- ggplot() +
   scale_colour_manual("", 
                       breaks = c("Hybrid Model", "Prior-day Model"),
                       values = c("#386cb0","#fdb462")) 
-grid.arrange((p + theme_Publication()),nrow=1)
+grid.arrange((rocPlot + theme_Publication()),nrow=1)
 ```
 
+Figure 3: Receiver Operating Characteristic (ROC) for Hybrid Model and Prior-day Model.
 
 A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.8 percent, the threshold within each year that corresponded to a 1.8 percent was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
 
@@ -289,7 +312,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 The pilot analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data.
 
-qPCR testing was piloted in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based methods were phased-out in 2017 and no longer collected. We used the clusters listed in Table 1 and model described in Figure 1
+qPCR testing was piloted in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based methods were phased-out in 2017 and no longer collected. We used the clusters listed in Table 1 and model described in Figure 2.
 
 In summer 2017, the model concept was piloted with some limitations imposed by available data. The feature beaches were Calumet, Rainbow, South Shore, 63rd Street, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using qPCR test results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes.
 
@@ -297,13 +320,13 @@ Beginning on Friday, May 26, water samples were collected by the Chicago Park Di
 
 Both predictions and samples were collected each day during the week. This process was different from prior years where samples were usually collected only during weekdays and non-holidays, except when levels had been elevated on the previous Friday or it was suspected to be a busy weekend on the beaches.
 
-To translate the predicted E. coli level to an advisory decision, the threshold level used to validate the original model was 381 CFU/100ml. Table 3 shows the confusion matrix for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results.
+To translate the predicted E. coli level to an advisory decision, the threshold level used to validate the original model was 381 CFU/100ml. Table S2 shows the confusion matrix for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results.
 
 ## Results
 
 Over the summer, the analytical model had a sensitivity (true positive rate) of 11.2 percent compared to a sensitivity of 3.2 percent in 2016 (Table 2). From 2015 through 2016, the historical average true positive rate for those beaches was 3.3 percent. That is, the hybrid model increased the true positive rate by 250 percent over the historical average. 
 
-```{r pilot_results, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
+```{r pilot_results, echo=FALSE, fig.height=4, fig.width=6, fig.align='center',  results='hide', message=FALSE, warning=FALSE}
 # 2017 Pilot results
 
 thresh <- 381
@@ -410,44 +433,52 @@ prec2015usgs <- tp2015usgs / (tp2015usgs + fp2015usgs)
 
 plotDf <- data.frame("rate" = c("True Positive Rate","True Positive Rate","True Positive Rate",
                                 "False Positive Rate","False Positive Rate","False Positive Rate"),
-                     "model" = c("Prior Day 2015","Prior Day 2016","Hybrid Pilot 2017",
+                     "Model" = c("Prior Day 2015","Prior Day 2016","Hybrid Pilot 2017",
                                  "Prior Day 2015","Prior Day 2016","Hybrid Pilot 2017"),
-                     "percentage" = c(tpr2015usgs, tpr2016usgs, tpr2017Pilot,
+                     "Percent" = c(tpr2015usgs, tpr2016usgs, tpr2017Pilot,
                                  fpr2015usgs, fpr2016usgs, fpr2017Pilot))
 plotDf$rate <- factor(plotDf$rate, levels = c("True Positive Rate","False Positive Rate"))
+plotDf$Model <- factor(plotDf$Model, levels = c("Hybrid Pilot 2017", "Prior Day 2016", "Prior Day 2015"))
 
-p <- ggplot(data = plotDf,aes(model, percentage)) +
+pilotResultsPlot <- ggplot(data = plotDf, aes(Model, Percent)) +
   geom_col() + 
   ylim(0,.2) + 
   facet_wrap(~ rate) +
   scale_colour_Publication() + 
   theme_Publication() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-p
+pilotResultsPlot
 ```
 
+Figure 4: Results of the 2017 Pilot.
 
 In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. While we cannot directly compare it to the Chicago prior-day models, in 2016 that model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the prior-day model issued 14 correct advisories versus 184 incorrect advisories.
 
 Overall, accuracy of the hybrid nowcast model is in line with the previous performance of the Chicago prior-day nowcast model. Since most days do not have elevated _E. coli_ levels, the increase in sensitivity (true positive rate) does not make a major impact on overall accuracy.
 
-```{r model_comparison, echo=FALSE, fig.height=6, fig.width=6, results='hide', message=FALSE, warning=FALSE}
-plotDf2 <- data.frame("Model" = c("2017 Hybrid", "2016 Prior-day", "2015 Prior-day"),
-                      "Specificity" = c(round(1 - fpr2017Pilot, 3),
-                                        round(1 - fpr2016usgs, 3),
-                                        round(1 - fpr2015usgs, 3)),
-                      "Sensitivity" = c(round(tpr2017Pilot, 3),
-                                        round(tpr2016usgs, 3),
-                                        round(tpr2015usgs, 3)),
-                      "Precision" = c(round(prec2017Pilot, 3),
-                                      round(prec2016usgs, 3),
-                                      round(prec2015usgs, 3)),
-                      "Accuracy" = c(round(acc2017Pilot, 3),
-                                     round(acc2016usgs, 3),
-                                     round(acc2015usgs, 3)))
-gridTheme <- ttheme_minimal()
-grid.table(plotDf2, theme=gridTheme, rows = NULL) 
+```{r model_comparison, echo=FALSE, fig.height=1.5, fig.width=6, fig.align='center',  results='hide', message=FALSE, warning=FALSE}
+modelCompData <- data.frame("Model" = c("2017 Hybrid", "2016 Prior-day", "2015 Prior-day"),
+                            "Specificity" = c(round(1 - fpr2017Pilot, 3),
+                                              round(1 - fpr2016usgs, 3),
+                                              round(1 - fpr2015usgs, 3)),
+                            "Sensitivity" = c(round(tpr2017Pilot, 3),
+                                              round(tpr2016usgs, 3),
+                                              round(tpr2015usgs, 3)),
+                            "Precision" = c(round(prec2017Pilot, 3),
+                                            round(prec2016usgs, 3),
+                                            round(prec2015usgs, 3)),
+                            "Accuracy" = c(round(acc2017Pilot, 3),
+                                           round(acc2016usgs, 3),
+                                           round(acc2015usgs, 3)))
 
+modelCompTable <- tableGrob(modelCompData, rows = NULL, theme=gridTheme)
+modelCompTable <- gtable_add_grob(modelCompTable,
+                                  grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                                  t = 2, b = nrow(modelCompTable), l = 1, r = ncol(modelCompTable))
+modelCompTable <- gtable_add_grob(modelCompTable,
+                                  grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                                  t = 1, l = 1, r = ncol(modelCompTable))
+grid.draw(modelCompTable)
 ```
 
 Table 2: Comparing specificity, sensitivity, and accuracy between Hybrid and Prior-day Nowcast Models.
@@ -482,29 +513,65 @@ Source code for the statistical model is available at XXXXXX. Raw data from beac
 
 ## Graphs and Figures
 
-|         Variable          | Percent Increase in MSE |
-|---------------------------|-------------------------|
-|        Beach Name         |          15.56          |   
-|   Foster E. coli Level    |          43.48          |   
-| North Avenue E. coli Level|          29.32          |   
-|    31st E. coli Level     |          27.46          |   
-|    Leone E. coli Level    |          43.73          |   
-| South Shore E. coli Level |          21.34          |   
+```{r variable_importance_table, echo=FALSE, fig.height=3, fig.width=4, fig.align='center', results='hide', message=FALSE, warning=FALSE}
+
+colnames(varImpData) <- c("Variable", "Percent Increase in MSE")
+varImpTable <- tableGrob(varImpData, rows = NULL, theme=gridTheme)
+varImpTable <- gtable_add_grob(varImpTable,
+                               grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                               t = 2, b = nrow(varImpTable), l = 1, r = ncol(varImpTable))
+varImpTable <- gtable_add_grob(varImpTable,
+                               grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                               t = 1, l = 1, r = ncol(varImpTable))
+grid.draw(varImpTable)
+
+```
 
 Table S1: Variable Importance.
 
 \pagebreak
 
-![Fitted values vs. Residuals](img/residual-vs-fitted.png)
+```{r residual_vs_fitted, echo=FALSE, fig.height=4, fig.width=4.5, fig.align='center', results='hide', message=FALSE, warning=FALSE}
+testData$rfPrediction <- predict(model, testData[,c(1:(ncol(testData)-2))])
+testData$logEColi <- log10(testData$Escherichia.coli)
+testData$logRfPrediction <- log10(testData$rfPrediction)
+testData$residual <- testData$logEColi - testData$logRfPrediction
+
+residFitPlot <- ggplot(testData, aes(logRfPrediction, testData$residual)) + 
+  geom_point() + 
+  xlab("Fitted (Log of E. coli CFU/100ml)") +
+  ylab("Residual")
+grid.arrange((residFitPlot + theme_Publication()),nrow=1)
+```
+
+Figure S1: Residuals vs. fits.
 
 \pagebreak
 
-![Model error decreases as the number of trees grow, until around 400 trees.](img/tree-growth.png)
+```{r model_trees, echo=FALSE, fig.height=4, fig.width=4.5, fig.align='center', results='hide', message=FALSE, warning=FALSE}
+treesPlot <- ggplot() + 
+  geom_line(aes(c(1:model$ntree), model$mse)) + 
+  xlab("Number of Trees") +
+  ylab("MSE")
+grid.arrange((treesPlot + theme_Publication()),nrow=1)
+```
 
-|    2017 Pilot   | Predicted Elevated | Predicted Normal |
-|-----------------|--------------------|------------------|
-| Actual Elevated |     9 (11.2%)      |    71 (88.8%)    | 
-| Actual Normal   |     24 (2.0%)      |   1,186 (98.0%)  |
+Figure S2: Model performance as number of trees grow.
+
+```{r hybrid_confusionmatrix, echo=FALSE, fig.height=1.5, fig.width=5, fig.align='center', results='hide', message=FALSE, warning=FALSE}
+confMatrixData <- data.frame(c(tp2017Pilot, fp2017Pilot), c(fn2017Pilot, tn2017Pilot))
+colnames(confMatrixData) <- c("Predicted Elevated", "Predicted Normal")
+row.names(confMatrixData) <- c("Actual Elevated", "Actual Normal")
+confMatrixTable <- tableGrob(confMatrixData, theme=gridTheme)
+confMatrixTable <- gtable_add_grob(confMatrixTable,
+        grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+        t = 2, b = nrow(confMatrixTable), l = 1, r = ncol(confMatrixTable))
+confMatrixTable <- gtable_add_grob(confMatrixTable,
+        grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+        t = 1, l = 1, r = ncol(confMatrixTable))
+grid.draw(confMatrixTable)
+```
+
 
 Table S2: Hybrid model 2017 pilot results.
 
