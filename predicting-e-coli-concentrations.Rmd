@@ -287,8 +287,8 @@ usgsROC <- data.frame(fpr = unlist(perf@x.values),
 ## plot hybrid and usgs ROC together
 
 rocPlot <- ggplot() + 
-  geom_line(aes(x = model_summary$fpr, y = model_summary$tpr, color = "Hybrid Model")) + 
-  geom_line(aes(x = usgsROC$fpr, y = usgsROC$tpr, color = "Prior-day Model")) +
+  geom_line(aes(x = model_summary$fpr, y = model_summary$tpr, linetype = "Hybrid Model")) + 
+  geom_line(aes(x = usgsROC$fpr, y = usgsROC$tpr, linetype = "Prior-day Model")) +
   ylim(0,1) + 
   xlim(0,1) + 
   xlab("False Positive Rate") +
