@@ -97,6 +97,8 @@ scale_colour_Publication <- function(...){
 gridTheme <- ttheme_minimal()
 ```
 
+Keywords: random forest; _Escherichia coli_; recreational water quality; fecal indicator bacteria; Chicago
+
 # Introduction
 
 Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often change so the water sample is not relevant to today's beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--dubbed "nowcast" models--to estimate water quality conditions for the day based on the previous day _E. coli_ levels and factors such as precipitation, wind, and water conditions `r citep(biblio["francy_developing_2013"])`.
