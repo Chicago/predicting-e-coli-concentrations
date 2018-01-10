@@ -23,6 +23,7 @@ output:
   word_document: default
   
 bibliography: zotero-references.bib
+csl: water-research.csl
 ---
 
 ```{r setup_environment, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
