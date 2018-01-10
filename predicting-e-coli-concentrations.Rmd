@@ -302,9 +302,9 @@ rocPlot <- ggplot() +
   xlab("False Positive Rate") +
   ylab("True Positive Rate") +
   geom_vline(xintercept = .018, linetype = "dashed") +
-  scale_colour_manual("", 
+  scale_linetype_manual("", 
                       breaks = c("Hybrid Model", "Prior-day Model"),
-                      values = c("#386cb0","#fdb462")) 
+                      values = c("solid","22")) 
 grid.arrange((rocPlot + theme_Publication()),nrow=1)
 ```
 
