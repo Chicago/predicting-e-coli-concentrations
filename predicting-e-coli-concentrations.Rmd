@@ -22,8 +22,8 @@ output:
     number_sections: yes
   word_document: default
   
-bibliography: zotero-references.bib
-csl: water-research.csl
+bibliography: bibliography/zotero-references.bib
+csl: bibliography/water-research.csl
 ---
 
 ```{r setup_environment, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
@@ -41,7 +41,7 @@ library(RSocrata)
 webshot::install_phantomjs()
 
 ## Read bibliography
-biblio <- read.bibtex("zotero-references.bib")
+biblio <- read.bibtex("bibliography/zotero-references.bib")
 options("citation_format" = "pandoc")
 
 ## Read data for tables / graphs
