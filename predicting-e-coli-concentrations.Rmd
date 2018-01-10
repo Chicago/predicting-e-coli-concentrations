@@ -117,7 +117,8 @@ We exploit the historical correlation between beaches to estimate water quality 
 
 We use 10 years of historical measurements from 20 beaches in Chicago to create a model to forecast whether bacteria levels at a beach will be elevated. During the summer of 2017, the model was able to increase the accuracy of prediction of beaches by 250 percent. Meanwhile, the model did not increase the rate of falsely identified days of high bacteria levels (known as Type I errors or "false positives"). 
 
-# Prior-day Nowcast Models
+# Material and Methods
+## Prior-day Nowcast Models
 
 Timing is a crucial factor for monitoring bacteria levels. We've adopted the typical shorthand to denote time periods by $t$ to denote now; $t-1$, $t-2$, $t-n$ to denote last period, two periods ago, and _some_ periods ago; and $t+1$, $t+2$, $t+n$ to denote the next period, two periods from now, and _some_ period in the future. For the purposes of this paper, we often use $t$ to denote _today_, $t-1$ to denote _yesterday_, and $t+1$ to denote _tomorrow_.
 
@@ -149,7 +150,7 @@ The analytical model used the structure from Equation 1, where $f( \dots )$ was 
 
 Beginning in 2015, Chicago Park District began to use limited qPCR testing at five beaches. Data was collected but not incorporated into the predictive model. During the summer of 2017, qPCR testing was expanded to all 20 beaches and culture-based testing was paused.
 
-# Hybrid Nowcast Model
+## Hybrid Nowcast Model
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
@@ -309,7 +310,7 @@ grid.arrange((rocPlot + theme_Publication()),nrow=1)
 
 A threshold was chosen to transform the model prediction to a binary outcome. To keep the model's false positive rate (FPR) near 1.8 percent, the threshold within each year that corresponded to a 1.8 percent was noted, and the mean threshold was then used to generate predictions for the holdout validation set. 
 
-# Pilot
+# Results and Discussion
 
 The pilot analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data.
 
@@ -475,7 +476,7 @@ knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity,
 
 Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Our target rate was 1.8 percent to remain consistent with prior summers, but specificity (true negative rate) fell slightly. In total, the hybrid model identified 24 days as having elevated levels, when the actual bacterial level was normal.
 
-# Discussion
+## Discussion
 
 The hybrid nowcast model preserves temporal readings of _E. coli_ levels at select beaches where qPCR testing is available and uses historial correlations between beaches to forecast bacteria levels where readings are not available. In the summer of 2017, the hybrid model correctly raised warnings by 250 percent while only marginally increasing "false negatives" (type II errors) by two-tenths of a percent.
 
