@@ -2,14 +2,14 @@
 title: Predicting E. coli concentrations using limited qPCR deployments at Chicago
   beaches
 author: 
- - Nick Lucius
+ - Nick Lucius, City of Chicago
  - Kevin Rose, Chi Hack Night
  - Callin Osborn, DePaul University
  - Matt E Sweeney, Chi Hack Night
  - Renel Chesak, DePaul University
  - Daniel Y. Little, Chi Hack Night
  - Scott Beslow, Chi Hack Night
- - Tom Schenk Jr.
+ - Tom Schenk Jr., City of Chicago
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
   Culture-based methods to measure Escherichia coli (E. coli) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since result take up to 12 hours,statistical models are used to forecast bacteria levels in lieu of test results, but they underestimate days with elevated E. coli levels, but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.2% to 11.2%--a 250% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
