@@ -4,7 +4,7 @@ This repository is part of the working draft for an upcoming paper tentatively t
 
 ## Document
 
-This document uses [RMarkdown](http://rmarkdown.rstudio.com/) to format the paper and uses [knitr](https://yihui.name/knitr/) to compile it. The simpliest way to compile the document is downloading the repo and opening the `predicting-e-coli-concentrations.Rproj` file in RStudio. Use the built-in knit button to compile the documentation.
+This document uses [RMarkdown](http://rmarkdown.rstudio.com/) to format the paper, uses [knitr](https://yihui.name/knitr/) to compile it, and the `rticles` package to format the document. The simpliest way to compile the document is downloading the repo and opening the `predicting-e-coli-concentrations.Rproj` file in RStudio. Use the built-in knit button to compile the documentation. Before knitting the document, install the `rticles` package.
 
 ### Bibliography
 

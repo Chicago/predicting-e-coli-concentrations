@@ -2,28 +2,48 @@
 title: Predicting E. coli concentrations using limited qPCR deployments at Chicago
   beaches
 author: 
- - Nick Lucius, City of Chicago
- - Kevin Rose, Chi Hack Night
- - Callin Osborn, DePaul University
- - Matt E Sweeney, Chi Hack Night
- - Renel Chesak, DePaul University
- - Daniel Y. Little, Chi Hack Night
- - Scott Beslow, Chi Hack Night
- - Tom Schenk Jr., City of Chicago
+ - name: Nick Lucius
+   affiliation: City of Chicago
+   email: nicholas.lucius2@cityofchicago.org
+   footnote: Corresponding author
+ - name: Kevin Rose
+   affiliation: Chi Hack Night
+ - name: Callin Osborn
+   affiliation: DePaul University
+ - name: Matt E Sweeney
+   affiliation: Chi Hack Night
+ - name: Renel Chesak
+   affiliation: DePaul University
+ - name: Daniel Y. Little
+   affiliation: Chi Hack Night
+ - name: Scott Beslow
+   affiliation: Chi Hack Night
+ - name: Tom Schenk Jr.
+   affiliation: City of Chicago
+   email: tom.schenk@cityofchicago.org
+address:
+ - code: City of Chicago
+   address: City of Chicago, 333 S State St., Suite 420, Chicago, IL 60614
+ - code: DePaul University
+   address: DePaul University, Department of Computer Science, 243 S Wabash Ave., Chicago, IL 60604
+ - code: Chi Hack Night
+   address: Chi Hack Night, 2543 N Spaulding Ave, Suite 2, Chicago, IL 60647
+keywords:
+  - random forest
+  - _Escherichia coli_
+  - recreational water quality
+  - fecal indicator bacteria
+  - Chicago
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
   Culture-based methods to measure Escherichia coli (E. coli) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since result take up to 12 hours,statistical models are used to forecast bacteria levels in lieu of test results, but they underestimate days with elevated E. coli levels, but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.2% to 11.2%--a 250% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
 always_allow_html: yes
 output:
-  pdf_document:
+  rticles::elsevier_article:
     number_sections: yes
     fig_caption: yes
-  html_document:
-    number_sections: yes
-  word_document: default
   
 bibliography: bibliography/zotero-references.bib
-csl: bibliography/water-research.csl
 ---
 
 ```{r setup_environment, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
@@ -99,8 +119,6 @@ scale_colour_Publication <- function(...){
 gridTheme <- ttheme_minimal()
 ```
 
-Keywords: random forest; _Escherichia coli_; recreational water quality; fecal indicator bacteria; Chicago
-
 # Introduction
 
 Managers of recreational beaches use culture-based methods to monitor bacteria levels at recreational beaches. Sampling is conducted early in the morning, but results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often change so the water sample is not relevant to today's beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--dubbed "nowcast" models--to estimate water quality conditions for the day based on the previous day _E. coli_ levels and factors such as precipitation, wind, and water conditions `r citep(biblio["francy_developing_2013"])`.
@@ -154,7 +172,7 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
-```{r correlation_heatmap, echo=FALSE, fig.width=17, fig.height=10, fig.align='center', fig.cap='Correlation heat map of Chicago beaches', results='hide', message=FALSE, warning=FALSE}
+```{r correlation_heatmap, echo=FALSE, fig.width=10, fig.height=10, fig.align='center', fig.cap='Correlation heat map of Chicago beaches', results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
