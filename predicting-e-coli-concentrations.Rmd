@@ -164,7 +164,7 @@ Water samples were collected for culture-based testing each morning and recorded
 
 `r citet(biblio["shively_prototypic_2016"])` used this data to build a prior-day nowcast model which used the prior-day culture tests and same-day hydrometeorological data to predict bacteria levels at all beaches. The novel model leveraged the sensors to automate the management process by providing estimates to beach managers each weekday.
 
-The analytical model used the structure from Equation 1, where $f( \dots )$ was a random forest model. Once predictions were obtained, they were published online for beach visitors. In 2015 and 2016, the overall accuracy was 90% and 93%, respectively, and specificity (true negative rate) was 98% and 99 percent. However, the sensitivity (true positive rate) was only 3% and 4 percent. 
+Predictions were obtained from a random forest model and the predictions were published online for beach visitors. In 2015 and 2016, the overall accuracy was 90% and 93%, respectively, and specificity (true negative rate) was 98% and 99 percent. However, the sensitivity (true positive rate) was only 3% and 4 percent. 
 
 Beginning in 2015, Chicago Park District began to use limited qPCR testing at five beaches. Data was collected but not incorporated into the predictive model. During the summer of 2017, qPCR testing was expanded to all 20 beaches and culture-based testing was paused.
 
