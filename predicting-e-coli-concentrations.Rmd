@@ -510,6 +510,12 @@ These results did not include any other covariates to help predict performance a
 
 While this paper showed a 250% increase in sensitivity to 11%, the ability to predict elevated bacteria levels is still relatively low. Sensitivity can be significantly improved, but at a cost of increasing the rate of false positives which is an inconvenience for beachgoers. However, there is a lack of guidelines or studies which provide guidelines for acceptable levels of false positives. Our target rate of 1.8% was determined based on prior years, but it may prove worthwhile to incorrectly predict additional beach warnings if it deters exposure to bacteria.
 
+# Conclusions
+
+  * Hybrid nowcast modeling preserves information from the current day, instead of test data from the prior day.
+  * The modeling technique allows for limited deployments of the costly qPCR testing equipment.
+  * Accuracy of predicting elevated bacteria levels increased from 3.2% to 11.2%--a 250% increase--while maintaining similar rate for false negatives.
+
 # Acknowledgements
 
 We are indebted to Chicago Park District staff, including Cathy Breitenbach and Carol Kim, who provided incredible guidance and feedback while taking time to work with the research team. Meredith Nevers graciously provided the research team with her considerable expertise. This was a unique project initially developed by a team of volunteers. We are grateful for Chi Hack Night which provided a forum for the volunteers to contribute to this project. In particular, we thank Forest Gregg who helped spur this project. We appreciate Jonathan Levy's work to publish the necessary data to make it available to the research team and the public. Finally, we wish to thank the attendees of State of Lake Michigan conference in 2017 for their comments and feedback.
