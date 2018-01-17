@@ -8,22 +8,28 @@ author:
    footnote: Corresponding author
  - name: Kevin Rose
    affiliation: Chi Hack Night
+   email: kevin@maypark.com
  - name: Callin Osborn
+   email: callin620@gmail.com
    affiliation: DePaul University
  - name: Matt E Sweeney
    affiliation: Chi Hack Night
+   email: mesweene@uic.edu
  - name: Renel Chesak
    affiliation: DePaul University
+   email: rchesak1@gmail.com
  - name: Daniel Y. Little
    affiliation: Chi Hack Night
+   email: daniel.y.little@gmail.com
  - name: Scott Beslow
    affiliation: Chi Hack Night
+   email: scott.beslow@gmail.com
  - name: Tom Schenk Jr.
    affiliation: City of Chicago
    email: tom.schenk@cityofchicago.org
 address:
  - code: City of Chicago
-   address: City of Chicago, 333 S State St., Suite 420, Chicago, IL 60614
+   address: City of Chicago, 333 S State St., Suite 420, Chicago, IL 60604
  - code: DePaul University
    address: DePaul University, Department of Computer Science, 243 S Wabash Ave., Chicago, IL 60604
  - code: Chi Hack Night
