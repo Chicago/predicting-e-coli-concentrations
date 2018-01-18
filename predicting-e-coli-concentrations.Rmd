@@ -178,7 +178,7 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation of _E. coli_ measurements between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. 
 
-```{r correlation_heatmap, echo=FALSE, fig.width=10, fig.height=10, fig.align='center', fig.cap='Correlation heat map of Chicago beaches', results='hide', message=FALSE, warning=FALSE}
+```{r correlation_heatmap, echo=FALSE, fig.width=10, fig.height=10, fig.align='center', fig.cap='Correlation heat map of Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
@@ -246,7 +246,7 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 2). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
 
-```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', fig.cap='Variable Importance', results='hide', message=FALSE, warning=FALSE}
+```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', fig.cap='Variable importance of each factor when added to random forest model as measured by mean squared error', results='hide', message=FALSE, warning=FALSE}
 varImpData <- importance(model, main = "", type=1)
 
 ## clean/style names for easier reading
@@ -276,7 +276,7 @@ grid.arrange((varImpPlot + scale_fill_Publication() + theme_Publication()) +
 
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted _E. coli_ for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
 
-The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. A plot of the log of the raw fitted values vs. residuals shows random variation as seen in Figure S1, suggesting a good model fit without unexpected patterns. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
+The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
 
 As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees.
 
@@ -288,7 +288,7 @@ Historically, the Chicago prior-day model from 2015 through 2016 had a false-pos
 
 Figure 3 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identify elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
 
-```{r ROC, echo=FALSE, fig.height=4.25, fig.width=4, fig.align='center', fig.cap='Receiver Operating Characteristic (ROC) for Hybrid Model and Prior-day Model.', results='hide', message=FALSE, warning=FALSE}
+```{r ROC, echo=FALSE, fig.height=4.25, fig.width=4, fig.align='center', fig.cap='Receiver Operating Characteristic (ROC) for Hybrid Model and Prior-day Model. Dashed line shows historical false positive rate for prior-day model in Chicago.', results='hide', message=FALSE, warning=FALSE}
 ## build USGS ROC
 
 dfSelected <- df[df$Client.ID %in% c(
@@ -355,7 +355,7 @@ Over the summer, the analytical model had a sensitivity (true positive rate) of 
 
 The precision of the model--the portion of predicted high FIB that were accurate compared to all predicted FIB beaches days--also grew from 17% to 27 percent--a 59% increase. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. 
 
-```{r pilot_results, echo=FALSE, fig.height=4, fig.width=6, fig.align='center', fig.cap='Results of the 2017 Pilot.',  results='hide', message=FALSE, warning=FALSE}
+```{r pilot_results, echo=FALSE, fig.height=4, fig.width=6, fig.align='center', fig.cap='Comparison of the 2017 hybrid pilot to existing prior-day model for "true positive rates" (sensitivity) and "false positive rates" (type I error)',  results='hide', message=FALSE, warning=FALSE}
 # 2017 Pilot results
 
 thresh <- 381
@@ -570,7 +570,7 @@ residFitPlot <- ggplot(testData, aes(logRfPrediction, testData$residual)) +
 grid.arrange((residFitPlot + theme_Publication()),nrow=1)
 ```
 
-Figure S1: Residuals vs. fits.
+Figure S1: Plot of the log of the raw fitted values vs. residuals shows random variation.'
 
 \pagebreak
 
@@ -599,7 +599,7 @@ grid.draw(confMatrixTable)
 ```
 
 
-Table S2: Hybrid model 2017 pilot results.
+Table S2: Confusion matrix for 2017 pilot of the hybrid model showing numbers of beach days in each quandrant.
 
 \newpage
 
