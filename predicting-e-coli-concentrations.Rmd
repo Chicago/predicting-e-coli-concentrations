@@ -42,7 +42,7 @@ keywords:
   - Chicago
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
-  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since result take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results, but they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
+  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results, but they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
 always_allow_html: yes
 output:
   rticles::elsevier_article:
@@ -197,10 +197,10 @@ file.remove("img/correlation-heatmap.png")
 
 Beaches are not uniformally correlated. Some beaches display strong clusters of correlation that exceed the correlation of readings within the same beach between days. By using strategic qPCR readings at selected beaches, are able to determine FIB levels at other beaches.
 
-Beaches are placed into clusters where bacteria levels are highly correlated, but readings between clusters is low. A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
+Beaches are placed into clusters where bacteria levels within clusters are highly correlated, but levels between clusters are not.A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
 
 $$ K = J \left( x_1^t, x_2^t, \dots, x_n^t \right) $$
-We select a feature beach, $\hat{x}_i^t$, in each cluster to predict the bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) will have the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
+We select one beach, $\hat{x}_i^t$, in each cluster to be the feature beach for predicting the bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) will have the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
 
 To generate the predictions, we can formulate a model that limits predictions to each cluster:
 
@@ -221,7 +221,7 @@ We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qP
 
 Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. Namely, we removed beaches that have lengthy breakwaters since it has an impact on bacteria levels at those beaches. We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater and bacteria exceedances between 2006 and 2017 were positive ($R^2$ = 0.54). We removed 63rd Street, Rainbow, Montrose, and Ohio, which have long breakwaters or a similar feature. 
 
-Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. Calumet, which had high exceedances as well as a medium-sized breakwater, was also removed from the analytical model. These 5 removed beaches comprised two of the clusters from the K-means analysis.
+Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. Calumet, which had high exceedances as well as a medium-sized breakwater, was also removed from the analytical model. These 5 removed beaches comprised two of the clusters from the initial K-means analysis.
 
 The final list of beaches and their respective clusters are listed in Table 1.
 
@@ -240,7 +240,7 @@ knitr::kable(table_beach_clusters, caption = "Final results of K-means clusterin
   
 ```
 
-Within each cluster, the beach with the most _E. coli_ exceedances was selected to be feature beach and rapid testing as model input. By rapid testing the beaches with the most frequest exceedances, we capture an added operational benefit of maximizing the number of correct advisories. The remaining beaches were selected to be predicted by the model.
+Within each cluster, the beach with the most _E. coli_ exceedances was selected to be the feature beach whose qPCR result would be model input. By rapid testing the beaches with the most frequest exceedances, we capture an added operational benefit of maximizing the number of correct advisories. The remaining beaches were selected to be predicted by the model.
 
 ## Building the Predictive Model
 
@@ -276,7 +276,7 @@ grid.arrange((varImpPlot + scale_fill_Publication() + theme_Publication()) +
 
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted _E. coli_ for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
 
-The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of the plot.
+The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of a plot of residual and fit.
 
 As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees.
 
@@ -335,17 +335,17 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 # Results and Discussion
 
-The pilot analytical model was created using historical data from 2015 and 2016. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data.
+A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we need to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data.
 
-qPCR testing was piloted in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based methods were phased-out in 2017 and no longer collected. We used the modeling concept described in Figure 2.
+qPCR testing was rolled out in a separate pilot in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based methods were phased-out in 2017 and no longer collected. 
 
-In summer 2017, the model was piloted with some limitations imposed by available data. The model inputs were qPCR test results for Calumet, Rainbow, South Shore, 63rd Street, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using results for 2015 and 2016 and fit to predict the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes.
+In summer 2017, the pilot analytical model went live with some limitations imposed by available data. The model inputs were qPCR test results for Calumet, Rainbow, South Shore, 63rd Street, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using results from the qPCR pilot for 2015 and 2016, and predicted the culture-based levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes.
 
 Beginning on Friday, May 26, water samples were collected by the Chicago Park District and qPCR testing was completed by the University of Illinois at Chicago. Those results were then posted to the City of Chicago Data Portal--typically around noon `r citep(biblio["city_of_chicago_beach_2016"])` . About 5 minutes later, we posted the predictions based on our model to the Data Portal `r citep(biblio["city_of_chicago_beach_2016-2"])`. The last predictions and samples were conducted on September 4th. While qPCR data was available for all beaches, we ignored any qPCR reading except for the 5 beaches used as model inputs.
 
 Both predictions and samples were collected each day during the week. This process was different from prior years where samples were usually collected only during weekdays and non-holidays, except when levels had been elevated on the previous Friday or it was suspected to be a busy weekend on the beaches.
 
-To translate the predicted E. coli level to an advisory decision, the threshold level used to validate the original model was 381 CFU/100ml.
+To translate the predicted E. coli level to an advisory decision, the threshold level referenced in Section 2.6 was used (381 CFU/100ml).
 
 Table S2 shows the confusion matrix for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])`.
 
@@ -503,15 +503,15 @@ knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity,
 
 ## Discussion
 
-Overall, the hybrid model correctly raised warnings by 230 percent. When a beach is predicted to have an elevated level, it is 58% less likey to have been a "false positive" (type I error). The increase in correct predictions, however, is not induced by simply raising more erroneous warnings. The "false negative" rate only slightly icnreases (type II errors) by two-tenths of a percent.
+Overall, the hybrid model correctly raised warnings by 230 percent. When a beach is predicted to have an elevated level, it is 58% less likely to have been a "false positive" (type I error). The increase in correct predictions, however, is not induced by simply raising more erroneous warnings. The "false negative" rate only slightly increases (type II errors) by two-tenths of a percent.
 
-In terms of impact on beachgoers, the hubrid model issued 90 correct advisories while there were 71 incorrect advisories. In 2016, the Chicago prior-day nowcast model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the priro-day model issued 14 correct advisories versus 184 incorrect advisories.
+In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. In 2016, the Chicago prior-day nowcast model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the prior-day model issued 14 correct advisories versus 184 incorrect advisories.
 
 The difference in performance is likely due to the use of bacteria levels on the same day. Chicago beaches rarely encounter consecutive days of elevated bacteria levels, so prior-day readings do not predict elevated levels on the next day. The factors that cause bacteria levels to grow rarely persist between days as few beaches have consecutive days of beach warnings. However, elevated bacteria levels portend ideal conditions for bacteria in other beaches.
 
 Although Chicago was able to deploy qPCR testing at all 20 beaches, the cost and complexity of qPCR equipment limits widescale deployment. For instance, the lab conducting qPCR testing for Chicago has no remaining equipment to expand testing to other beaches or to recreational beaches along the Chicago river. The hybrid model presented in this paper allows beach managers to balance the constraints of qPCR equipment with beachgoer safety.
 
-We removed four beaches from this model because of physical characteristics, such as long breakwaters, that prevented them from being clustered with other beaches; one beach was removed due to frequently high readings; and we used 5 beaches to predict FIB levels. As a result, 10 total beaches would need to undergo qPCR testing and ten beaches would be able to forgo any testing. Of the 10 undergoing qPCR testing, 5 would be tested to estimate FIB levels for 10 other beaches and the other 5 would need qPCR testing since they have distinct geographies, breakwaters, or other unique physical characteristics.
+We removed four beaches from this model because of physical characteristics, such as long breakwaters, that prevented them from being clustered with other beaches; one beach was removed due to frequently high readings; and we used 5 beaches to predict FIB levels. As a result, 10 total beaches would need to undergo qPCR testing and 10 beaches would be able to forgo any testing. Of the 10 undergoing qPCR testing, 5 would be tested to estimate FIB levels for 10 other beaches and the other 5 would need qPCR testing since they have distinct geographies, breakwaters, or other unique physical characteristics.
 
 This model selected feature beaches that were prone to elevated bacteria levels, Foster, North Avenue, Leone, 31st, and South Shore. Moreover, we removed Calumet from the model since it frequently had elevated levels. qPCR testing can be deployed to the worse behaved beaches and rely on statistical models for the remaining beaches. This will naturally improve model performance since beaches which comprise the mode number of issues will be accurately measured, leading to more accurate beach warnings.
 
