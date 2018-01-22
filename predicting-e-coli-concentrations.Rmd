@@ -197,7 +197,7 @@ file.remove("img/correlation-heatmap.png")
 
 Beaches are not uniformally correlated. Some beaches display strong clusters of correlation that exceed the correlation of readings within the same beach between days. By using strategic qPCR readings at selected beaches, are able to determine FIB levels at other beaches.
 
-Beaches are placed into clusters where bacteria levels within clusters are highly correlated, but levels between clusters are not.A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
+Beaches are placed into clusters where bacteria levels within clusters are highly correlated, but levels between clusters are not. A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
 
 $$ K = J \left( x_1^t, x_2^t, \dots, x_n^t \right) $$
 We select one beach, $\hat{x}_i^t$, in each cluster to be the feature beach for predicting the bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) will have the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
