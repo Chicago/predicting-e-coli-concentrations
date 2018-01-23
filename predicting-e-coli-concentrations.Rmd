@@ -42,7 +42,7 @@ keywords:
   - Chicago
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
-  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since result take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
+  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
 always_allow_html: yes
 output:
   rticles::elsevier_article:
@@ -195,10 +195,10 @@ include_graphics("img/correlation-heatmap.png")
 file.remove("img/correlation-heatmap.png")
 ```
 
-Beaches are placed into clusters where bacteria levels are highly correlated, but readings between clusters is low. A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
+Beaches are placed into clusters where bacteria levels within clusters are highly correlated, but levels between clusters are not. A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
 
 $$ K = J \left( x_1^t, x_2^t, \dots, x_n^t \right) $$
-We select one beach, $\hat{x}_i^t$, in each cluster to be the feature beach for predicting the bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) will have the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
+We select one beach, $\hat{x}_i^t$, in each cluster to be the feature beach for predicting bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) will have the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
 
 To generate the predictions, we can formulate a model that limits predictions to each cluster:
 
@@ -238,7 +238,7 @@ knitr::kable(table_beach_clusters, caption = "Final results of K-means clusterin
   
 ```
 
-Within each cluster, the beach with the most _E. coli_ exceedances was selected to be the feature beach whose qPCR result would be model input. By rapid testing the beaches with the most frequest exceedances, we capture an added operational benefit of maximizing the number of correct advisories. The remaining beaches were selected to be predicted by the model.
+Within each cluster, the beach with the most _E. coli_ exceedances was selected to be the feature beach whose qPCR result would be input to the model. By rapid testing the beaches with the most frequest exceedances, we capture an added operational benefit of maximizing the number of correct advisories. The remaining beaches were selected to be predicted by the model.
 
 ## Building the Predictive Model
 
@@ -274,7 +274,7 @@ grid.arrange((varImpPlot + scale_fill_Publication() + theme_Publication()) +
 
 The name of the beach being predicted had the lowest importance. Without this predictor, the predicted _E. coli_ for a specific day would be the same for each beach. Indeed, because of the correlation that exists between certain beaches, it is not surprising that beach identity would rank last against the importance of E. coli levels along the whole lakefront. Still, permuting the beach name variable led to a 15.6% increase in the MSE.
 
-The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of a plot of residual and fit.
+The random forest regression model fit predicted _E. coli_ levels in CFU/100ml units. These raw levels were transformed to a binary advisory decision. Due to left censoring at 1 CFU/100ml and an abundance of low E. coli readings, a limit can be observed at the lower left portion of a plot of residuals and fitted values.
 
 As the number of trees in the random forest model grew, model error decreased until around 400 trees. No performance benefit was observed beyond 400 trees.
 
@@ -501,7 +501,7 @@ knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity,
 
 ## Discussion
 
-Overall, the hybrid model correctly raised warnings by 230 percent. When a beach is predicted to have an elevated level, it is 58% less likey to have been a "false positive" (type I error). The increase in correct predictions, however, is not induced by simply raising more erroneous warnings. The "false negative" rate only slightly increases (type II errors) by two-tenths of a percent.
+Overall, the hybrid model correctly raised warnings by 230 percent. When a beach is predicted to have an elevated level, it is 58% less likely to have been a "false positive" (type I error). The increase in correct predictions, however, is not induced by simply raising more erroneous warnings. The "false negative" rate only slightly increases (type II errors) by two-tenths of a percent.
 
 In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. In 2016, the Chicago prior-day nowcast model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the prior-day model issued 14 correct advisories versus 184 incorrect advisories.
 
