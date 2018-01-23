@@ -345,7 +345,7 @@ Both predictions and samples were collected each day during the week. This proce
 
 To translate the predicted E. coli level to an advisory decision, the threshold level referenced in Section 2.6 was used (381 CFU/100ml).
 
-Table S2 shows the confusion matrix for the results of the pilot. Each quadrant shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])`.
+The confusion matrix for the results of the pilot shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])`.
 
 ## Results
 
