@@ -160,7 +160,7 @@ Yet, the reliance on prior-day bacteria levels are likely the source of inaccura
 
 ## Chicago Prior-day Nowcast Model
 
-Chicago Park District measures water quality of 20 beaches along 26 miles against Lake Michigan on Chicago's eastern shore. There is no single source of bacteria in Lake Michigan; rather it is likely introduced by birds, beaches, and people. The Chicago River is contiguous to Lake Michigan but a lock limits water flowing into the lake. While the lock is sometimes opened, it is generally less than once per year, and beaches are immediately closed `r citep(biblio["chicago_metropolitan_water_reclamation_district_reversals_2016"])`.
+Chicago Park District measures water quality of 20 beaches along 26 miles against Lake Michigan on Chicago's eastern shore. There is no single source of bacteria in Lake Michigan; rather it is likely introduced by birds, land-based animals, beaches, and people. The Chicago River is contiguous to Lake Michigan but a lock limits water flowing into the lake. While the lock is sometimes opened, it is generally less than once per year, and beaches are immediately closed `r citep(biblio["chicago_metropolitan_water_reclamation_district_reversals_2016"])`.
 
 Beaches operate between Memorial Day weekend through Labor Day -- approximately 122 days. As a result, there are approximately 2,440 "beach days," which each represent an observation in the model. An individual beach may have a warning when _E. coli_ levels have exceeded acceptable thresholds. 
 
@@ -242,7 +242,7 @@ Within each cluster, the beach with the most _E. coli_ exceedances was selected 
 
 ## Building the Predictive Model
 
-A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 2). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5).
+A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 2). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5) and due to the north-to-south current of the lake.
 
 ```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', fig.cap='Variable importance of each factor when added to random forest model as measured by mean squared error', results='hide', message=FALSE, warning=FALSE}
 varImpData <- importance(model, main = "", type=1)
@@ -343,13 +343,13 @@ Beginning on Friday, May 26, water samples were collected by the Chicago Park Di
 
 Both predictions and samples were collected each day during the week. This process was different from prior years where samples were usually collected only during weekdays and non-holidays, except when levels had been elevated on the previous Friday or it was suspected to be a busy weekend on the beaches.
 
-To translate the predicted E. coli level to an advisory decision, the threshold level referenced in Section 2.6 was used (381 CFU/100ml).
+To translate the predicted _E. coli_ level to an advisory decision, beaches that were forecasted to exceed 381 CFU/100ml were predicted to have a swim advisory due to FIB. Even though this threshold exceeds Environmental Protection Agency (EPA) requirements, that threshold was empircally shown to be the best correlate to actual exceedances using EPA standards. Subsequent lab testing and swim advisories due to FIB were issued only if FIB exceeded EPA standards.
 
-The confusion matrix for the results of the pilot shows the relationship between the prediction (whether the model provided an advisory) versus the actual results from qPCR testing (whether there were levels above 381 CFU/100ml). We compared whether our model predicted elevated bacteria levels compared to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])`.
+Over the summer of 2017, we compared predictions to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])` and calculated several standard measurements to evaluate the performance of the model.
 
 ## Results
 
-Over the summer, the analytical model had a sensitivity (true positive rate) of 11.2 percent compared to a sensitivity of 3.7 percent in 2016 (Table 2). From 2015 through 2016, the historical average true positive rate for the predicted beaches was 3.4 percent. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
+The analytical model had a sensitivity (true positive rate) of 11.2 percent compared to a sensitivity of 3.7 percent in 2016 (Table 2). From 2015 through 2016, the historical average true positive rate for the predicted beaches was 3.4 percent. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
 
 The precision of the model--the portion of predicted high FIB that were accurate compared to all predicted FIB beach days--also grew from 17% to 27 percent--a 59% increase. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. 
 
