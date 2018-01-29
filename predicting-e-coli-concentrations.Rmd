@@ -11,12 +11,12 @@ author:
    email: kevin@maypark.com
  - name: Callin Osborn
    email: callin620@gmail.com
-   affiliation: DePaul University
+   affiliation: DePaul-Stat
  - name: Matt E Sweeney
    affiliation: Chi Hack Night
    email: mesweene@uic.edu
  - name: Renel Chesak
-   affiliation: DePaul University
+   affiliation: DePaul-CS
    email: rchesak1@gmail.com
  - name: Daniel Y. Little
    affiliation: Chi Hack Night
@@ -30,8 +30,10 @@ author:
 address:
  - code: City of Chicago
    address: City of Chicago, 333 S State St., Suite 420, Chicago, IL 60604
- - code: DePaul University
-   address: DePaul University, Department of Computer Science, 243 S Wabash Ave., Chicago, IL 60604
+ - code: DePaul-Stat
+   address: DePaul University, College of Science and Health, 1 E. Jackson, Chicago, IL 60604
+ - code: DePaul-CS
+   address: DePaul University, School of Computing, 243 S Wabash Ave., Chicago, IL 60604
  - code: Chi Hack Night
    address: Chi Hack Night, 2543 N Spaulding Ave, Suite 2, Chicago, IL 60647
 keywords:
@@ -45,7 +47,7 @@ header-includes:
   - \linenumbers
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
-  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvment in forecast accuracy.
+  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 100% to 400% more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4% to 11.2%--a 230% increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvement in forecast accuracy.
 always_allow_html: yes
 output:
   rticles::elsevier_article:
