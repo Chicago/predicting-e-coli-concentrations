@@ -1,4 +1,4 @@
 [submodule "clear-water"]
 	path = clear-water
 	url = git@github.com:Chicago/clear-water
-	branch = dev
+	branch = master
