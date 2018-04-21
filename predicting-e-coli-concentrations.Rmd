@@ -71,7 +71,7 @@ library(knitcitations)
 library(knitr)
 library(ROCR)
 library(RSocrata)
-webshot::install_phantomjs()
+webshot::install_phantomjs() #once installed on your computer, this can be commented out
 
 ## Read bibliography
 biblio <- read.bibtex("bibliography/zotero-references.bib")
@@ -189,7 +189,7 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing at fi
 
 `r citet(biblio["whitman_summer_2008"])` observed that bacteria levels at Chicago beaches often fluctuate with each other on the same day where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation of _E. coli_ measurements between beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. Beaches are not uniformally correlated. Some beaches display strong clusters of correlation that exceed the correlation of readings within the same beach between days.
 
-```{r correlation_heatmap, echo=FALSE, fig.width=4.8, fig.height=6, fig.align='center', fig.cap='Correlation heat map of Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
+```{r correlation_heatmap, echo=FALSE, fig.width=5, fig.height=4, fig.align='center', fig.cap='Pearson correlation coefficient heat map of daily E. coli levels at Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
@@ -199,12 +199,13 @@ beachCor <- na.omit(beachCor)
 beachCor <- log(beachCor[,c(2:21)])
 corTable <- cor(beachCor)
 corTable <- round(corTable, 2)
-heatmap <- heatmaply_cor(corTable)
+heatmap <- heatmaply_cor(corTable,
+                         main = "Beach Correlation")
 export(heatmap, 
        file = "img/correlation-heatmap.png",
-       vwidth = 600,
-       vheight = 480,
-       zoom = .8) 
+       vwidth = 500,
+       vheight = 400,
+       zoom = 1) 
 include_graphics("img/correlation-heatmap.png")
 file.remove("img/correlation-heatmap.png")
 ```
