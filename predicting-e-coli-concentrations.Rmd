@@ -150,7 +150,7 @@ Both of these tests have generally-acceptable thresholds for acceptable FIB leve
 
 We exploit the historical correlation between beaches to estimate FIB readings. We use limited qPCR results at specific beaches to predict elevated bacteria levels at other beaches using clustering algorithms and random forest regressions. This hybrid approach allows limited deployment of qPCR equipment to reduce overall costs and provides a higher quality statistical model.
 
-We use 10 years of historical measurements from 20 beaches in Chicago to create a model to forecast whether bacteria levels at a beach will be elevated. During the summer of 2017, the model was able to increase the accuracy of prediction of beaches by 230 percent. Meanwhile, the model did not increase the rate of falsely identified days of high bacteria levels (known as Type I errors or "false positives"). 
+We use 10 years of historical measurements from 20 beaches in Chicago to create a model to forecast whether bacteria levels at a beach will be elevated. 
 
 # Material and Methods
 ## Prior-day Nowcast Models
