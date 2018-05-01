@@ -69,6 +69,7 @@ library(gridExtra)
 library(gtable)
 library(knitcitations)
 library(knitr)
+library(pROC)
 library(ROCR)
 library(RSocrata)
 webshot::install_phantomjs() #once installed on your computer, this can be commented out
@@ -386,6 +387,8 @@ tpr2017Pilot <- tp2017Pilot / (tp2017Pilot + fn2017Pilot)
 fpr2017Pilot <- fp2017Pilot / (fp2017Pilot + tn2017Pilot)
 acc2017Pilot <- (tp2017Pilot + tn2017Pilot) / (tp2017Pilot + tn2017Pilot + fp2017Pilot + fn2017Pilot)
 prec2017Pilot <- tp2017Pilot / (tp2017Pilot + fp2017Pilot)
+roc2017Pilot <- roc(pilot2017$actualHigh, pilot2017$Predicted.Level)
+auc2017Pilot <- auc(roc2017Pilot)[1]
 
 # usgs 2016 results
 
@@ -429,7 +432,8 @@ tpr2016usgs <- tp2016usgs / (tp2016usgs + fn2016usgs)
 fpr2016usgs <- fp2016usgs / (fp2016usgs + tn2016usgs)
 acc2016usgs <- (tp2016usgs + tn2016usgs) / (tp2016usgs + tn2016usgs + fp2016usgs + fn2016usgs)
 prec2016usgs <- tp2016usgs / (tp2016usgs + fp2016usgs)
-
+roc2016usgs <- roc(usgs2016$actualHigh, usgs2016$Predicted.Level)
+auc2016usgs <- auc(roc2016usgs)[1]
 
 # usgs 2015 results
 
@@ -472,6 +476,8 @@ tpr2015usgs <- tp2015usgs / (tp2015usgs + fn2015usgs)
 fpr2015usgs <- fp2015usgs / (fp2015usgs + tn2015usgs)
 acc2015usgs <- (tp2015usgs + tn2015usgs) / (tp2015usgs + tn2015usgs + fp2015usgs + fn2015usgs)
 prec2015usgs <- tp2015usgs / (tp2015usgs + fp2015usgs)
+roc2015usgs <- roc(usgs2015$actualHigh, usgs2015$Predicted.Level)
+auc2015usgs <- auc(roc2015usgs)[1]
 
 plotDf <- data.frame("rate" = c("True Positive Rate","True Positive Rate","True Positive Rate",
                                 "False Positive Rate","False Positive Rate","False Positive Rate"),
@@ -507,9 +513,12 @@ modelCompData <- data.frame("Model" = c("2017 Hybrid", "2016 Prior-day", "2015 P
                                             round(prec2015usgs, 3)),
                             "Accuracy" = c(round(acc2017Pilot, 3),
                                            round(acc2016usgs, 3),
-                                           round(acc2015usgs, 3)))
+                                           round(acc2015usgs, 3)),
+                            "AUC" = c(round(auc2017Pilot, 3),
+                                      round(auc2016usgs, 3),
+                                      round(auc2015usgs, 3)))
 
-knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity, sensitivity, and accuracy between Hybrid and Prior-day Nowcast models.")
+knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity, sensitivity, accuracy, and AUC between Hybrid and Prior-day Nowcast models.")
 ```
 
 
