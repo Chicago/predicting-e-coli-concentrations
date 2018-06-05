@@ -64,12 +64,14 @@ bibliography: bibliography/zotero-references.bib
 
 library(data.table)
 library(heatmaply)
+library(ggplot2)
 library(ggthemes)
 library(gridExtra)
 library(gtable)
 library(knitcitations)
 library(knitr)
 library(pROC)
+library(rgdal)
 library(ROCR)
 library(RSocrata)
 webshot::install_phantomjs() #once installed on your computer, this can be commented out
@@ -79,6 +81,7 @@ biblio <- read.bibtex("bibliography/zotero-references.bib")
 options("citation_format" = "pandoc")
 
 ## Read data for tables / graphs
+cookShape <- readOGR("geojson/Cook_County_Border.geojson")
 setwd(paste0(getwd(), "/clear-water"))
 source("Master.R")
 labs <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-Lab-Data/2ivx-z93u")
@@ -205,12 +208,12 @@ corTable <- round(corTable, 2)
 heatmap <- heatmaply_cor(corTable,
                          main = "Beach Correlation")
 export(heatmap, 
-       file = "img/correlation-heatmap.png",
+       file = "correlation-heatmap.png",
        vwidth = 500,
        vheight = 400,
        zoom = 1) 
-include_graphics("img/correlation-heatmap.png")
-file.remove("img/correlation-heatmap.png")
+include_graphics("correlation-heatmap.png")
+file.remove("correlation-heatmap.png")
 ```
 
 Beaches are placed into clusters where bacteria levels within clusters are highly correlated, but levels between clusters are not. A clustering algorithm, $J\left( \dots \right)$, can assign beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
@@ -598,6 +601,81 @@ grid.arrange((treesPlot + theme_Publication()),nrow=1)
 
 \pagebreak
 
+```{r beach_map, echo=FALSE, fig.height=6, fig.width=4.6, fig.align='center', fig.cap='Map of Lake Michigan beaches in Chicago with results of k-means clustering.', results='hide', message=FALSE, warning=FALSE}
+
+## map size settings
+
+x <- .25
+y <- x * 1.3
+xlow <- -87.607273 - (x/2)
+xhigh <- -87.607273 + (x/2)
+ylow <- 41.863616 - (y/2)
+yhigh <- 41.863616 + (y/2)
+
+## create beach location dataset
+
+mapDf <- data.frame(Client.ID = c("12th", "31st", "57th", "63rd", "Albion", "Calumet", "Foster",
+                                  "Howard", "Jarvis", "Juneway", "Leone", "Montrose", "North Avenue",
+                                  "Oak Street", "Ohio", "Osterman", "Rainbow", "Rogers", "South Shore",
+                                  "39th"),
+                    Longitude = c(-87.607273, -87.606380, -87.578814, -87.574059, -87.656630, -87.528369,
+                                  -87.649444, -87.663889, -87.662407, -87.665141, -87.661405, -87.637448,
+                                  -87.625146, -87.622680, -87.613016, -87.652233, -87.550556, -87.664589, 
+                                  -87.561562, -87.595582),
+                    Latitude = c(41.863616, 41.839388, 41.791073, 41.782798, 42.002584, 41.714927, 41.978946,
+                                 42.018919, 42.016114, 42.022470, 42.013105, 41.967048, 41.914863, 41.903013,
+                                 41.893509, 41.986671, 41.759164, 42.021492, 41.768801, 41.821366),
+                    Justify = c("L"),
+                    Cluster = c("four","four","five","excluded","one","excluded","one","three","three","three","three","excluded","two","two","excluded","one","excluded","three","five","four"),
+                    stringsAsFactors = FALSE)
+mapDf$Cluster <- as.factor(mapDf$Cluster)
+mapDf$Cluster = factor(mapDf$Cluster,levels(mapDf$Cluster)[c(4,6,5,3,2,1)])
+mapDf$plotLongitude <- mapDf$Longitude
+mapDf$plotLatitude <- mapDf$Latitude 
+mapDf[mapDf$Client.ID == "12th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "12th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "31st", "plotLongitude"] <- mapDf[mapDf$Client.ID == "31st", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "57th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "57th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] <- mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] <- mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] + .02
+mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] + .015
+mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] <- mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "39th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "39th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] + .002
+mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] + .003
+mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] - .002
+mapDf[mapDf$Client.ID == "Howard", "Justify"] <- "R"
+mapDf[mapDf$Client.ID == "Juneway", "Justify"] <- "R"
+mapDf[mapDf$Client.ID == "Leone", "Justify"] <- "R"
+
+## Plot beach location data
+
+ggplot(data = cookShape) + 
+  geom_polygon(aes(x = long, y = lat, group = group), 
+               fill = "white", color = "black", size = 0.25) + 
+  geom_point(aes(x = Longitude, y = Latitude, shape = Cluster), data = mapDf, size = 4, stroke = .8) +
+  coord_fixed(xlim = c(xlow, xhigh), ylim = c(ylow, yhigh)) +
+  scale_shape(solid = FALSE) +
+  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "L",], hjust = 0, size = 3) +
+  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "R",], hjust = 1, size = 3) +
+  annotate("text", x = -87.54, y = 41.95, label = "Lake Michigan", size = 5) +
+  annotate("text", x = -87.7, y = 41.87, label = "Chicago", size = 5) +
+  theme_map()
+```
+
+\pagebreak
+
 ```{r hybrid_confusionmatrix, echo=FALSE, fig.height=1.5, fig.width=5, fig.align='center', results='hide', message=FALSE, warning=FALSE}
 confMatrixData <- data.frame(c(tp2017Pilot, fp2017Pilot), c(fn2017Pilot, tn2017Pilot))
 colnames(confMatrixData) <- c("Predicted Elevated", "Predicted Normal")
@@ -605,6 +683,7 @@ row.names(confMatrixData) <- c("Actual Elevated", "Actual Normal")
 
 knitr::kable(confMatrixData, caption = "Confusion matrix for 2017 pilot of the hybrid model showing numbers of beach days in each quandrant.", format = "pandoc", escape = FALSE)
 ```
+
 
 \newpage
 
