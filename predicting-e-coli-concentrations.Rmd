@@ -195,7 +195,7 @@ Beginning in 2015, Chicago Park District began to use limited qPCR testing of _e
 
 `r citet(biblio["whitman_summer_2008"])` observed that FIB levels at Chicago beaches often correlated with nearby beaches on the same day, where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation of culture-based _E. coli_ measurements between Chicago beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. Beaches were not uniformally correlated. Some beaches displayed strong clusters of correlation that exceed the correlation of readings within the same beach between days.
 
-```{r correlation_heatmap, echo=FALSE, fig.width=5, fig.height=4, fig.align='center', fig.cap='Pearson correlation coefficient heat map of daily _E. coli_ levels at Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
+```{r correlation_heatmap, echo=FALSE, fig.width=5, fig.height=4, fig.align='center', fig.cap='Pearson correlation coefficient heat map of daily E. coli levels at Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
 
 ## Generate Correlation Heatmap of Beaches
 
