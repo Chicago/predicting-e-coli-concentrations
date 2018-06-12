@@ -394,6 +394,8 @@ acc2017Pilot <- (tp2017Pilot + tn2017Pilot) / (tp2017Pilot + tn2017Pilot + fp201
 prec2017Pilot <- tp2017Pilot / (tp2017Pilot + fp2017Pilot)
 roc2017Pilot <- roc(pilot2017$actualHigh, pilot2017$Predicted.Level)
 auc2017Pilot <- auc(roc2017Pilot)[1]
+ct2017Pilot <- table(pilot2017$predHigh, pilot2017$actualHigh)
+cst2017Pilot <- chisq.test(ct2017Pilot, simulate.p.value = TRUE) 	
 
 # usgs 2016 results
 
@@ -439,6 +441,8 @@ acc2016usgs <- (tp2016usgs + tn2016usgs) / (tp2016usgs + tn2016usgs + fp2016usgs
 prec2016usgs <- tp2016usgs / (tp2016usgs + fp2016usgs)
 roc2016usgs <- roc(usgs2016$actualHigh, usgs2016$Predicted.Level)
 auc2016usgs <- auc(roc2016usgs)[1]
+ct2016usgs <- table(usgs2016$predHigh, usgs2016$actualHigh)
+cst2016usgs <- chisq.test(ct2016usgs, simulate.p.value = TRUE) 
 
 # usgs 2015 results
 
@@ -483,6 +487,8 @@ acc2015usgs <- (tp2015usgs + tn2015usgs) / (tp2015usgs + tn2015usgs + fp2015usgs
 prec2015usgs <- tp2015usgs / (tp2015usgs + fp2015usgs)
 roc2015usgs <- roc(usgs2015$actualHigh, usgs2015$Predicted.Level)
 auc2015usgs <- auc(roc2015usgs)[1]
+ct2015usgs <- table(usgs2015$predHigh, usgs2015$actualHigh)
+cst2015usgs <- chisq.test(ct2015usgs, simulate.p.value = TRUE) 
 
 plotDf <- data.frame("rate" = c("True Positive Rate","True Positive Rate","True Positive Rate",
                                 "False Positive Rate","False Positive Rate","False Positive Rate"),
@@ -521,9 +527,12 @@ modelCompData <- data.frame("Model" = c("2017 Hybrid", "2016 Prior-day", "2015 P
                                            round(acc2015usgs, 3)),
                             "AUC" = c(round(auc2017Pilot, 3),
                                       round(auc2016usgs, 3),
-                                      round(auc2015usgs, 3)))
+                                      round(auc2015usgs, 3)),
+                            "Chi-squared p-value" = c(round(cst2017Pilot$p.value, 4),
+                                      round(cst2016usgs$p.value, 4),
+                                      round(cst2015usgs$p.value, 4)))
 
-knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity, sensitivity, accuracy, and AUC between Hybrid and Prior-day Nowcast models.")
+knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity, sensitivity, accuracy, AUC, and Chi-squared p-value between Hybrid and Prior-day Nowcast models. Chi-squared p-values generated with Monte Carlo simluation.")
 ```
 
 
