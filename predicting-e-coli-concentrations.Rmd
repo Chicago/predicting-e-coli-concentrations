@@ -619,12 +619,28 @@ knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model"
   
 ```
 
-Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly lower (0.829) than the model which only relied on interbeach correlation (0.832). While the difference is not numerically large, it indicates that the addition of the additional variables does not increase predictive power.
+Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly lower (0.829) than the model which only relied on interbeach correlation (0.833). While the difference is not numerically large, it indicates that the addition of the additional variables does not increase predictive power.
 
 We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.627, which shows a significant loss in accuracy.
 
-[INSERT TABLE OF MODEL RESULTS]
+```{r table_multivariate_model_results, echo=FALSE, message=FALSE, warning=FALSE}
+hybrid <- readRDS("clear-water/models/model-hybrid-only-2016-holdout.Rds")
+multivariate <- readRDS("clear-water/models/model-hybrid-plus-other-2016-holdout.Rds")
+multivariateAltered <- readRDS("clear-water/models/model-other-only-2016-holdout.Rds")
+rocHybrid <- roc(hybrid$predictions$actual_binary, hybrid$predictions$predictionRF)
+aucHybrid <- auc(rocHybrid)[1]
+rocMultivariate <- roc(multivariate$predictions$actual_binary, multivariate$predictions$predictionRF)
+aucMultivariate <- auc(rocMultivariate)[1]
+rocMultivariateAltered <- roc(multivariateAltered$predictions$actual_binary, multivariateAltered$predictions$predictionRF)
+aucmultivariateAltered <- auc(rocMultivariateAltered)[1]
+tableData <- data.frame("Model" = c("Hybrid", "Multivariate", "Multivariate (altered)"),
+                        "Time Period" = "2006 - 2016",
+                        "AUC" = c(round(aucHybrid, 3),
+                                  round(aucMultivariate, 3),
+                                  round(aucmultivariateAltered, 3)))
 
+knitr::kable(tableData, format = "pandoc", caption = "Comparison of Multivariate model to Hybrid model.")
+```
 
 \pagebreak
 
