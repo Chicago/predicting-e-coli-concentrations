@@ -622,7 +622,7 @@ knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model"
 
 Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly lower (0.829) than the model which only relied on interbeach correlation (0.832). While the difference is not numerically large, it indicates that the addition of the additional variables does not increase predictive power.
 
-We also tested an altered form of the model that removed the qPCR test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.627, which shows a significant loss in accuracy.
+We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.627, which shows a significant loss in accuracy.
 
 [INSERT TABLE OF MODEL RESULTS]
 
