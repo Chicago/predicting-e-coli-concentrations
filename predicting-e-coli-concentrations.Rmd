@@ -246,7 +246,7 @@ The final list of beaches and their respective clusters are listed in Table 1.
 
 ```{r table_beach_clusters, echo=FALSE, message=FALSE, warning=FALSE}
 k <- c("$\\hat{x}$", "$x_{1 \\in k}$", "$x_{2 \\in k}$", "$x_{3 \\in k}$", "$x_{4 \\in k}$")
-Cluster_1 <- c("Foster^", "Osterman", "", "", "")
+Cluster_1 <- c("Foster^", "Osterman", "Albion", "", "")
 Cluster_2 <- c("North Avenue^", "Oak Street", "", "", "")
 Cluster_3 <- c("Leone^", "Juneway", "Howard", "Rogers", "Jarvis")
 Cluster_4 <- c("31st^", "12th", "39th", "", "")
