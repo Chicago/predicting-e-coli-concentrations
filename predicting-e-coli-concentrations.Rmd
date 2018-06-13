@@ -183,7 +183,7 @@ Beaches operate from Memorial Day weekend, which is just before the last Monday 
 
 Between 2011 and 2016, Chicago Park District placed hydrometeorological sensors to automatically collect covariates on water and atmospheric conditions. Buoys were installed at five Chicago beaches--Foster, Montrose, Oak, 63rd Street, and Calumet--to collect turbidity, wave height, wave period, water temperature, and depth of the sensor. Weather stations were installed at three beaches--Foster, Oak, and 63rd Street--and collected wind direction, wind speed, air temperature, rainfall, solar radiation, relative humidity, and barometric pressure. Data were collected from the hydrometeorological sensors between every 2 and 5 minutes from May through Setpember and aggregated.
 
-Water samples were collected for culture-based testing each morning and recorded, usually around noon. Sampling was done on weekdays; however, weekend and holiday sampling was conducted if the prior readings were elevated or if the weekend was particularly busy.
+Water samples were collected for culture-based testing each morning and recorded, usually around noon. Sampling was done on weekdays; however, weekend and holiday sampling was conducted if the prior readings were elevated or if Chicago Park District determined the weekend was busy. Between 2006 and 2016, only 3 percent of the samples were taken on weekends.
 
 `r citet(biblio["shively_prototypic_2016"])` used this data to build a prior-day nowcast model which used the prior-day culture tests and same-day hydrometeorological data to predict FIB levels at all beaches. The novel model leveraged the sensors to automate the management process by providing estimates to beach managers each weekday.
 
