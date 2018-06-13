@@ -70,11 +70,12 @@ library(gridExtra)
 library(gtable)
 library(knitcitations)
 library(knitr)
+library(kableExtra)
 library(pROC)
 library(rgdal)
 library(ROCR)
 library(RSocrata)
-webshot::install_phantomjs() #once installed on your computer, this can be commented out
+#webshot::install_phantomjs() #once installed on your computer, this can be commented out
 
 ## Read bibliography
 biblio <- read.bibtex("bibliography/zotero-references.bib")
@@ -354,7 +355,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 # Results and Discussion
 
-A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Therefore, a pilot model was live tested at Chicago beaches in 2017 on newly collected data.
+A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Therefore, pilot models were live tested at Chicago beaches in 2017 on newly collected data.
 
 Separately, _enterococci_ qPCR testing had been rolled out in Chicago in a separate pilot in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based _E. coli_ testing methods were phased-out in 2017 and no longer collected. 
 
@@ -582,6 +583,49 @@ colnames(varImpData) <- c("Variable", "Percent Increase in MSE")
 knitr::kable(varImpData, caption = "Variable importance as measured by mean squared error (MSE).", format = "pandoc", escape = FALSE, row.names = FALSE, digits = 1)
 
 ```
+
+## Multivariate Model
+
+Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
+
+`r citer(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
+
+Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(bilio["whitman_solar_2004"])` found that increased sunlight inactived _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_ found. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
+
+We included various measurements of wind since `r citet(biblio[c("smith_effect_1999", "olyphant_elements_2004")])` found that wind is a reliable predictor of FIB levels. In particular, beaches downwind from point-pollution sources or where FIB was actived are more likely to experience elevated _E. coli_ levels. We used the Dark Sky API to determine the wind direction and intensity each day, as well has historical data preceeding a beach sample.
+
+Similarly, wave and tidal patterns seem to influence observed FIB levels. `r citet(bilio["le_fevre_role_2003"])` found that _E. coli_ levels could be resuspended under tidal waves, allowing _E. coli_ to be observed in locations only reached by waves or tidal levels. In a multivariate model, `r citet(bilio["crowther_relationships_2001"])` showed that tidal levels affected observed FIB levels. Unfortunately, our team did not have access to suffucient historical data to determine wave and tidal levels, but we used lunar phases to approximate the 1-day and 3-day average lake level. [NICK, PLEASE ADD TO THE LAKE LEVELS IF NEEDED]
+
+Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
+
+Table A.1 shows additional covariates used in the analytical model. 
+
+```{r table_hybrid_multivariate_variables, echo=FALSE, message=FALSE, warning=FALSE}
+
+Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total rainfall", "Total rainfall total until 8am",
+               "Daily cloud cover forecast", "Prior-day cloudiness", "3-day total cloudiness", "Length of daylight time in a day",
+               "Wind Direction", "Wind Speed", "1-day average wind speed", "3-day average wind speed", "Wind speed at 8am",
+               "1-day tidal levels", "3-day tidal levels", "Tidal levels at 8am",
+               "1-day lake level", "3-day average lake level",
+               "Indicator for weekday", "Julian date")
+Variables <- data.frame(Variables)
+
+knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE) %>% 
+  kableExtra::group_rows("Precipitation", 1, 4) %>% 
+  kableExtra::group_rows("Sunlight", 5, 8) %>%
+  kableExtra::group_rows("Wind", 9, 13) %>%
+  kableExtra::group_rows("Tidal Levels", 14, 16) %>%
+  kableExtra::group_rows("Lake Level", 17, 18) %>%
+  kableExtra::group_rows("Visitor Density", 19, 20)
+  
+```
+
+Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly lower (0.829) than the model which only relied on interbeach correlation (0.832). While the difference is not numerically large, it indicates that the addition of the additional variables does not increase predictive power.
+
+We also tested an altered form of the model that removed the qPCR test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.627, which shows a significant loss in accuracy.
+
+[INSERT TABLE OF MODEL RESULTS]
+
 
 \pagebreak
 
