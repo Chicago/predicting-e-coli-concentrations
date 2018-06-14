@@ -84,13 +84,12 @@ options("citation_format" = "pandoc")
 ## Read data for tables / graphs
 cookShape <- readOGR("geojson/Cook_County_Border.geojson")
 setwd(paste0(getwd(), "/clear-water"))
-source("Master.R")
-hybrid <- model
 source("Master-alternate.R")
 multivariate <- model
 source("Master-alternate-2.R")
 multivariateAltered <- model
-model <- hybrid
+source("Master.R")
+hybrid <- model
 labs <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-Lab-Data/2ivx-z93u")
 preds <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-E-coli-Predictions/xvsz-3xcj")
 labs$DNA.Sample.Timestamp <- strftime(labs$DNA.Sample.Timestamp, format = "%Y-%m-%d")
