@@ -85,6 +85,12 @@ options("citation_format" = "pandoc")
 cookShape <- readOGR("geojson/Cook_County_Border.geojson")
 setwd(paste0(getwd(), "/clear-water"))
 source("Master.R")
+hybrid <- model
+source("Master-alternate.R")
+multivariate <- model
+source("Master-alternate-2.R")
+multivariateAltered <- model
+model <- hybrid
 labs <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-Lab-Data/2ivx-z93u")
 preds <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-E-coli-Predictions/xvsz-3xcj")
 labs$DNA.Sample.Timestamp <- strftime(labs$DNA.Sample.Timestamp, format = "%Y-%m-%d")
@@ -619,14 +625,11 @@ knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model"
   
 ```
 
-Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly lower (0.829) than the model which only relied on interbeach correlation (0.833). While the difference is not numerically large, it indicates that the addition of the additional variables does not increase predictive power.
+Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly higher (0.846) than the model which only relied on interbeach correlation (0.833). While the multivariate model technically performs better, the insignificance of the difference indicates that the addition of the additional variables does not increase predictive power.
 
-We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.627, which shows a significant loss in accuracy.
+We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.701, which shows a significant loss in accuracy.
 
 ```{r table_multivariate_model_results, echo=FALSE, message=FALSE, warning=FALSE}
-hybrid <- readRDS("clear-water/models/model-hybrid-only-2016-holdout.Rds")
-multivariate <- readRDS("clear-water/models/model-hybrid-plus-other-2016-holdout.Rds")
-multivariateAltered <- readRDS("clear-water/models/model-other-only-2016-holdout.Rds")
 rocHybrid <- roc(hybrid$predictions$actual_binary, hybrid$predictions$predictionRF)
 aucHybrid <- auc(rocHybrid)[1]
 rocMultivariate <- roc(multivariate$predictions$actual_binary, multivariate$predictions$predictionRF)
