@@ -70,11 +70,12 @@ library(gridExtra)
 library(gtable)
 library(knitcitations)
 library(knitr)
+library(kableExtra)
 library(pROC)
 library(rgdal)
 library(ROCR)
 library(RSocrata)
-webshot::install_phantomjs() #once installed on your computer, this can be commented out
+#webshot::install_phantomjs() #once installed on your computer, this can be commented out
 
 ## Read bibliography
 biblio <- read.bibtex("bibliography/zotero-references.bib")
@@ -83,7 +84,12 @@ options("citation_format" = "pandoc")
 ## Read data for tables / graphs
 cookShape <- readOGR("geojson/Cook_County_Border.geojson")
 setwd(paste0(getwd(), "/clear-water"))
+source("Master-alternate.R")
+multivariate <- model
+source("Master-alternate-2.R")
+multivariateAltered <- model
 source("Master.R")
+hybrid <- model
 labs <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-Lab-Data/2ivx-z93u")
 preds <- read.socrata("https://data.cityofchicago.org/Parks-Recreation/Beach-E-coli-Predictions/xvsz-3xcj")
 labs$DNA.Sample.Timestamp <- strftime(labs$DNA.Sample.Timestamp, format = "%Y-%m-%d")
@@ -266,7 +272,7 @@ Within each cluster, the beach with the most historical culture-based _E. coli_ 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 2). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5) and due to the north-to-south current of the lake.
 
 ```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', fig.cap='Variable importance of each factor when added to random forest model as measured by mean squared error', results='hide', message=FALSE, warning=FALSE}
-varImpData <- importance(model, main = "", type=1)
+varImpData <- importance(model$model, main = "", type=1)
 
 ## clean/style names for easier reading
 variableNames <- row.names(varImpData)
@@ -354,7 +360,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 # Results and Discussion
 
-A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Therefore, a pilot model was live tested at Chicago beaches in 2017 on newly collected data.
+A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Therefore, pilot models were live tested at Chicago beaches in 2017 on newly collected data.
 
 Separately, _enterococci_ qPCR testing had been rolled out in Chicago in a separate pilot in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based _E. coli_ testing methods were phased-out in 2017 and no longer collected. 
 
@@ -583,10 +589,65 @@ knitr::kable(varImpData, caption = "Variable importance as measured by mean squa
 
 ```
 
+## Multivariate Model
+
+Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
+
+`r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
+
+Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(biblio["whitman_solar_2004"])` found that increased sunlight inactivated _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_ found. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
+
+We included various measurements of wind since `r citet(biblio[c("smith_effect_1999", "olyphant_elements_2004")])` found that wind is a reliable predictor of FIB levels. In particular, beaches downwind from point-pollution sources or where FIB was active are more likely to experience elevated _E. coli_ levels. We used the Dark Sky API to determine the wind direction and intensity each day, as well has historical data preceeding a beach sample.
+
+Similarly, wave and tidal patterns seem to influence observed FIB levels. `r citet(biblio["le_fevre_role_2003"])` found that _E. coli_ levels could be resuspended under tidal waves, allowing _E. coli_ to be observed in locations only reached by waves or tidal levels. In a multivariate model, `r citet(biblio["crowther_relationships_2001"])` showed that tidal levels affected observed FIB levels. Unfortunately, our team did not have access to suffucient historical data to determine tidal levels, but we approximated their effect by using the lunar phase. Additionally, we used the previous day's Lake Michigan water level and 3-day average water level, as measured and obtained by the National Oceanic and Atmospheric Administration (NOAA) at Calumet Harbor in Chicago.
+
+Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
+
+Table A.1 shows additional covariates used in the analytical model. 
+
+```{r table_hybrid_multivariate_variables, echo=FALSE, message=FALSE, warning=FALSE}
+
+Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total rainfall", "Total rainfall total until 8am",
+               "Daily cloud cover forecast", "Prior-day cloudiness", "3-day total cloudiness", "Length of daylight time in a day",
+               "Wind Direction", "Wind Speed", "1-day average wind speed", "3-day average wind speed", "Wind speed at 8am",
+               "Lunar phase", "1-day lake level", "3-day average lake level",
+               "Indicator for weekday", "Julian date")
+Variables <- data.frame(Variables)
+
+knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE) %>% 
+  kableExtra::group_rows("Precipitation", 1, 4) %>% 
+  kableExtra::group_rows("Sunlight", 5, 8) %>%
+  kableExtra::group_rows("Wind", 9, 13) %>%
+  kableExtra::group_rows("Tidal Levels", 14, 14) %>%
+  kableExtra::group_rows("Lake Level", 15, 16) %>%
+  kableExtra::group_rows("Visitor Density", 17, 18)
+  
+```
+
+Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly higher (0.846) than the model which only relied on interbeach correlation (0.833). While the multivariate model technically performs better, the insignificance of the difference indicates that the addition of the additional variables does not increase predictive power.
+
+We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.701, which shows a significant loss in accuracy.
+
+```{r table_multivariate_model_results, echo=FALSE, message=FALSE, warning=FALSE}
+rocHybrid <- roc(hybrid$predictions$actual_binary, hybrid$predictions$predictionRF)
+aucHybrid <- auc(rocHybrid)[1]
+rocMultivariate <- roc(multivariate$predictions$actual_binary, multivariate$predictions$predictionRF)
+aucMultivariate <- auc(rocMultivariate)[1]
+rocMultivariateAltered <- roc(multivariateAltered$predictions$actual_binary, multivariateAltered$predictions$predictionRF)
+aucmultivariateAltered <- auc(rocMultivariateAltered)[1]
+tableData <- data.frame("Model" = c("Hybrid", "Multivariate", "Multivariate (altered)"),
+                        "Time Period" = "2006 - 2016",
+                        "AUC" = c(round(aucHybrid, 3),
+                                  round(aucMultivariate, 3),
+                                  round(aucmultivariateAltered, 3)))
+
+knitr::kable(tableData, format = "pandoc", caption = "Comparison of Multivariate model to Hybrid model.")
+```
+
 \pagebreak
 
 ```{r residual_vs_fitted, echo=FALSE, fig.height=4, fig.width=4.5, fig.align='center', fig.cap='Plot of the log of raw fitted values versus residuals from the random forest model.', results='hide', message=FALSE, warning=FALSE}
-testData$rfPrediction <- predict(model, testData[,c(1:(ncol(testData)-2))])
+testData$rfPrediction <- predict(model$model, testData[,c(1:(ncol(testData)-2))])
 testData$logEColi <- log10(testData$Escherichia.coli)
 testData$logRfPrediction <- log10(testData$rfPrediction)
 testData$residual <- testData$logEColi - testData$logRfPrediction
@@ -602,7 +663,7 @@ grid.arrange((residFitPlot + theme_Publication()),nrow=1)
 
 ```{r model_trees, echo=FALSE, fig.height=4, fig.width=4.5, fig.align='center', fig.cap='Model performance measured by mean squared error (MSR) as the number of trees grow within the random forest model.', results='hide', message=FALSE, warning=FALSE}
 treesPlot <- ggplot() + 
-  geom_line(aes(c(1:model$ntree), model$mse)) + 
+  geom_line(aes(c(1:model$model$ntree), model$model$mse)) + 
   xlab("Number of Trees") +
   ylab("MSE")
 grid.arrange((treesPlot + theme_Publication()),nrow=1)
