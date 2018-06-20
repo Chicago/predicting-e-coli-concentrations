@@ -386,6 +386,7 @@ The precision of the model--the portion of predicted high FIB that were accurate
 thresh <- 381
 pilot2017 <- merge(preds, labs, by.x = c("Beach.Name", "Date"), by.y = c("Beach", "DNA.Sample.Timestamp"))
 pilot2017 <- data.table(pilot2017)
+pilot2017 <- pilot2017[Date < as.Date("2018-01-01")]
 pilot2017[Predicted.Level >= thresh, predHigh := 1]
 pilot2017[Predicted.Level < thresh, predHigh := 0]
 pilot2017[DNA.Reading.Mean >= 1000, actualHigh := 1]
