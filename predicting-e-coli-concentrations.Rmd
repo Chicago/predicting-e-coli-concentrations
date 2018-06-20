@@ -477,8 +477,8 @@ usgs2015 <- usgs2015[Client.ID %in% c("12th",
                           "Ohio",
                           "Osterman",
                           # "Rainbow",
-                          "Rogers")]
-# "South Shore")]
+                          "Rogers",
+                          "South Shore")]
 usgs2015 <- na.omit(usgs2015)
 usgs2015[Predicted.Level >= 235, predHigh := 1]
 usgs2015[Predicted.Level < 235, predHigh := 0]
