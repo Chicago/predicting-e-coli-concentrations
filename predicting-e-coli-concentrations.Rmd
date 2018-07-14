@@ -386,6 +386,7 @@ The precision of the model--the portion of predicted high FIB that were accurate
 thresh <- 381
 pilot2017 <- merge(preds, labs, by.x = c("Beach.Name", "Date"), by.y = c("Beach", "DNA.Sample.Timestamp"))
 pilot2017 <- data.table(pilot2017)
+pilot2017 <- pilot2017[Date < as.Date("2018-01-01")]
 pilot2017[Predicted.Level >= thresh, predHigh := 1]
 pilot2017[Predicted.Level < thresh, predHigh := 0]
 pilot2017[DNA.Reading.Mean >= 1000, actualHigh := 1]
@@ -400,8 +401,8 @@ acc2017Pilot <- (tp2017Pilot + tn2017Pilot) / (tp2017Pilot + tn2017Pilot + fp201
 prec2017Pilot <- tp2017Pilot / (tp2017Pilot + fp2017Pilot)
 roc2017Pilot <- roc(pilot2017$actualHigh, pilot2017$Predicted.Level)
 auc2017Pilot <- auc(roc2017Pilot)[1]
-ct2017Pilot <- table(pilot2017$predHigh, pilot2017$actualHigh)
-cst2017Pilot <- chisq.test(ct2017Pilot, simulate.p.value = TRUE) 	
+mcc2017Pilot <- (tp2017Pilot * tn2017Pilot - fp2017Pilot * fn2017Pilot) / 
+  sqrt((as.numeric(tp2017Pilot + fp2017Pilot))*(tp2017Pilot + fn2017Pilot)*(tn2017Pilot + fp2017Pilot)*(tn2017Pilot + fn2017Pilot))
 
 # usgs 2016 results
 
@@ -447,8 +448,8 @@ acc2016usgs <- (tp2016usgs + tn2016usgs) / (tp2016usgs + tn2016usgs + fp2016usgs
 prec2016usgs <- tp2016usgs / (tp2016usgs + fp2016usgs)
 roc2016usgs <- roc(usgs2016$actualHigh, usgs2016$Predicted.Level)
 auc2016usgs <- auc(roc2016usgs)[1]
-ct2016usgs <- table(usgs2016$predHigh, usgs2016$actualHigh)
-cst2016usgs <- chisq.test(ct2016usgs, simulate.p.value = TRUE) 
+mcc2016usgs <- (tp2016usgs * tn2016usgs - fp2016usgs * fn2016usgs) / 
+  sqrt((as.numeric(tp2016usgs + fp2016usgs))*(tp2016usgs + fn2016usgs)*(tn2016usgs + fp2016usgs)*(tn2016usgs + fn2016usgs))
 
 # usgs 2015 results
 
@@ -477,7 +478,7 @@ usgs2015 <- usgs2015[Client.ID %in% c("12th",
                           "Osterman",
                           # "Rainbow",
                           "Rogers")]
-# "South Shore")]
+                          # "South Shore")]
 usgs2015 <- na.omit(usgs2015)
 usgs2015[Predicted.Level >= 235, predHigh := 1]
 usgs2015[Predicted.Level < 235, predHigh := 0]
@@ -493,8 +494,8 @@ acc2015usgs <- (tp2015usgs + tn2015usgs) / (tp2015usgs + tn2015usgs + fp2015usgs
 prec2015usgs <- tp2015usgs / (tp2015usgs + fp2015usgs)
 roc2015usgs <- roc(usgs2015$actualHigh, usgs2015$Predicted.Level)
 auc2015usgs <- auc(roc2015usgs)[1]
-ct2015usgs <- table(usgs2015$predHigh, usgs2015$actualHigh)
-cst2015usgs <- chisq.test(ct2015usgs, simulate.p.value = TRUE) 
+mcc2015usgs <- (tp2015usgs * tn2015usgs - fp2015usgs * fn2015usgs) / 
+  sqrt((as.numeric(tp2015usgs + fp2015usgs))*(tp2015usgs + fn2015usgs)*(tn2015usgs + fp2015usgs)*(tn2015usgs + fn2015usgs))
 
 plotDf <- data.frame("rate" = c("True Positive Rate","True Positive Rate","True Positive Rate",
                                 "False Positive Rate","False Positive Rate","False Positive Rate"),
@@ -534,11 +535,11 @@ modelCompData <- data.frame("Model" = c("2017 Hybrid", "2016 Prior-day", "2015 P
                             "AUC" = c(round(auc2017Pilot, 3),
                                       round(auc2016usgs, 3),
                                       round(auc2015usgs, 3)),
-                            "Chi-squared p-value" = c(round(cst2017Pilot$p.value, 4),
-                                      round(cst2016usgs$p.value, 4),
-                                      round(cst2015usgs$p.value, 4)))
+                            "MCC" = c(round(mcc2017Pilot, 3),
+                                      round(mcc2016usgs, 3),
+                                      round(mcc2015usgs, 3)))
 
-knitr::kable(modelCompData, format = "pandoc", caption = "Comparing specificity, sensitivity, accuracy, AUC, and Chi-squared p-value between Hybrid and Prior-day Nowcast models. Chi-squared p-values generated with Monte Carlo simluation.")
+knitr::kable(modelCompData, format = "pandoc", caption = "Comparing Specificity, Sensitivity, Accuracy, Area Under Curve (AUC), and Matthews Correlation Coefficient (MCC) between Hybrid and Prior-day Nowcast models.")
 ```
 
 
