@@ -47,7 +47,7 @@ header-includes:
   - \linenumbers
 date: '`r format(Sys.time(), "%B %d, %Y")`'
 abstract: |
-  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 2 to 5 times more expensive than culture-based methods. Data were collected daily during summer swimming seasons for 11 years from 2006 through 2016. This paper presents a prediction model which uses limited deployments of “rapid testing” sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using pilot data from Chicago, the model proposed in this paper increased accuracy from 3.4 percent to 11.2 percent--a 230 percent increase. Thus, limited deployments of qPCR testing can be used to control costs, but are blended with statistical forecasting to gain an overall improvement in forecast accuracy.
+  Culture-based methods to measure _Escherichia coli_ (_E. coli_) are used by beach administrators to inform whether bacteria levels represent an elevated risk to swimmers. Since results take up to 12 hours, statistical models are used to forecast bacteria levels in lieu of test results; however they underestimate days with elevated fecal indicator bacteria levels. Quantitative polymerase chain reaction (qPCR) tests return results within 3 hours but are 2 to 5 times more expensive than culture-based methods. This paper presents a prediction model which uses limited deployments of qPCR tested sites with inter-beach correlation to predict when bacteria will exceed acceptable thresholds. The model can be used to inform management decisions on when to warn residents or close beaches due to exposure to the bacteria. Using data from Chicago collected between 2006 and 2016, the model proposed in this paper increased accuracy from 3.4 percent to 11.2 percent--a 230 percent increase. We find that the correlation between beaches are substantial enough to provide higher levels of precision and sensitivity to predictive models. Thus, limited deployments of qPCR testing can be used to deliver better predictions for beach administrators at lower cost and less complexity.
 always_allow_html: yes
 output:
   rticles::elsevier_article:
@@ -150,15 +150,15 @@ Declarations of interest: none
 
 Swimming in recreational waters contaminated with high levels of fecal indicator bacteria (FIB) is associated with higher incidence of gastrointestinal (GI) illnesses `r citep(biblio["pruss_review_1998"])`. The risk of exposure is associated with the amount of FIB measured in the water. A logarithmic increase in average _Enterococcus_ was associated with a 1.4 increase in the odds ratio of contracting GI illness `r citep(biblio["wade_rapidly_2006"])`. Evidence also suggests that children are more likely to contract GI illnesses when exposed to the same contaminated water as adults `r citep(biblio["wade_high_2008"])`.
 
-To prevent this, managers of recreational beaches use culture-based methods to measure levels of FIB levels. Sampling is typically conducted early in the morning, but results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often change so the water sample is not relevant to today's beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--dubbed "nowcast" models--to estimate FIB for the day based on the previous day _E. coli_ levels and factors such as precipitation, wind, and water conditions `r citep(biblio["francy_developing_2013"])`.
+To prevent this, managers of recreational beaches use culture-based methods to measure FIB levels. Sampling is typically conducted early in the morning, but results take upward of 12 hours `r citep(biblio["kinzelman_enterococci_2003"])`.  Between the time of sampling and subsequent results, beach conditions will often change so the water sample is not relevant to today's beach conditions `r citep(biblio[c("whitman_interaction_1999","boehm_decadal_2002")])`. To get around this, researchers have developed statistical models--dubbed "nowcast" models--to estimate FIB for the day based on the previous day _E. coli_ levels and factors such as precipitation, wind, and water conditions `r citep(biblio["francy_developing_2013"])`.
 
-These models often incorrectly predict that beaches will not have elevated FIB levels--known as Type II errors or "false negatives" `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. For instance in 2015, Chicago beaches had 200 events where FIB levels were too high; however, only 14 (7.0 percent) of these "beach days" were forecasted by the predictive model. These models do have good overall fit, but elevated FIB levels are statistically rare events and models often fail to predict them--known as low "sensitivity".
+These models often incorrectly predict that beaches will not have elevated FIB levels--known as Type II errors or "false negatives" `r citep(biblio[c("nevers_efficacy_2011", "rabinovici_economic_2004", "boehm_decadal_2002")])`. For instance in 2015, Chicago beaches had 200 events where FIB levels were too high; however, only 14 (7.0 percent) of these "beach days" were forecasted by an existing predictive model used by the Chicago Park District. These models do have good overall fit, but elevated FIB levels are statistically rare events and models often fail to predict them--known as low "sensitivity".
 
 Meanwhile, scientists have developed new methods which measure FIB levels in water with substantially less delay. _Enterococci_ quantitative polymerase chain reaction (qPCR) methods can determine FIB levels within 3 to 4 hours and yield similar results as culture-based methods `r citep(biblio[c("haugland_comparison_2005","kinzelman_enterococci_2003")])`. The rapid turnaround lets managers determine warnings or closures based on tests within the same day instead of relying on statistical models.
 
 However, this approach has a drawback of cost and equipment availability. qPCR testing can cost between 2 to 5 times more than traditional culture-based methods `r citep(biblio["bienkowski_dna_nodate"])`. Thus, managers are faced with a dilemma of choosing between expensive qPCR methods or choosing slower culture-based methods and using predictive models to produce swim advisories.
 
-Both of these tests have generally-acceptable thresholds for acceptable FIB levels. The Environmental Protection Agency (EPA) publishes water quality criteria in accordance with the Clean Water Act. The current EPA recreation water quality criteria accepts culture-based and qPCR-based methods `r citep(biblio["environmental_protection_agency_recreational_2012"])`. Acceptable levels for culture-based methods of testing _E. coli_ should not exceed 235 CFU/100 ml while acceptable levels for qPCR testing of _enterococci_ should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. These rules can be leveraged to create a new predictive model which mixes the short turn-around of qPCR with statistical models to produce swim advisories.
+Both of these tests have thresholds for acceptable FIB levels. The Environmental Protection Agency (EPA) publishes water quality criteria in accordance with the Clean Water Act. The current EPA recreational water quality criteria accepts culture-based or qPCR-based methods `r citep(biblio["environmental_protection_agency_recreational_2012"])`. Acceptable levels for culture-based methods of testing _E. coli_ should not exceed 235 CFU/100 ml while acceptable levels for qPCR testing of _enterococci_ should not exceed 1,000 cell equivalents (CE) `r citep(biblio["byappanahalli_linking_2010"])`. These rules can be leveraged to create a new predictive model which mixes the short turn-around of qPCR with statistical models to produce swim advisories.
 
 In this study, we exploit the historical correlation between beaches to estimate FIB readings. We also use limited _enterococci_ qPCR results at specific beaches to predict elevated _E. coli_ levels at other beaches using clustering algorithms and random forest regressions. This hybrid approach allows limited deployment of qPCR equipment to reduce overall costs and provides a higher quality statistical model.
 
@@ -171,19 +171,93 @@ Timing is a crucial factor for monitoring FIB levels. We adopt the typical short
 
 The defining characteristic of prior-day nowcast models is using FIB levels from the previous day ($t-1$) to predict bacteria levels for the current day ($t$). Models will also incorporate covariates or predictors to improve the accuracy of models, such as precipitation `r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])`, sunlight `r citep(biblio["whitman_solar_2004"])`, wind `r citep(biblio[c("smith_effect_1999", "olyphant_elements_2004")])`, wave and tidal levels `r citep(biblio[c("le_fevre_role_2003", "crowther_relationships_2001")])`, lake levels `r citep(biblio["francy_testing_2009"])`, turbidity `r citep(biblio["olyphant_characterization_2003"])`, and density of humans and animals `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`.
 
-These models rely on prior-day data since culture-based testing is not available until upward of 12 hours after the samples were collected. The prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and other covariates, $w_1, w_2, ..., w_j$. These models often take the form of
+These models rely on prior-day data since culture-based testing is not available until upward of 12 hours after the samples were collected. The prediction at beach $x_i$ at time $t$ is dependent on the prior periods culture-based results, $x_i^{t-1}$ and aforementioned covariates, $w_1, w_2, ..., w_j$. These models often take the form of
 
 $$ x_i^t = f \left( x_i^{t-1}, w_1, w_2, ..., w_j \right) $$
 
 where $f(...)$ is a some function or algorithm that inputs raw data and outputs a probability. For instance, the linear regression model is typically $x_i^t = \beta_1 x_i^{t-1} + \beta_2 w_1 + \beta_3 w_2 + ... + \beta_j w_j$, where $\beta_j$ are the coefficients that weight the importance of each input. 
 
-Various models are used to improve accuracy, such as log transformations `r citep(biblio["nevers_nowcast_2005"])`, polynomial coefficients `r citep(biblio["frick_nowcasting_2008"])`, logistic regression, partial least squares `r citep(biblio["hou_enterococci_2006"])`, generlized boosted regression modeling `r citep(biblio["cyterski_virtual_2014"])`, random forest, and genetic algorithm approaches `r citep(biblio["brooks_predicting_2016"])`. This class of models often has the same structure of using FIB levels from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
+Various models are used to improve accuracy, such as log transformations `r citep(biblio["nevers_nowcast_2005"])`, polynomial coefficients `r citep(biblio["frick_nowcasting_2008"])`, logistic regression, partial least squares `r citep(biblio["hou_enterococci_2006"])`, generlized boosted regression modeling `r citep(biblio["cyterski_virtual_2014"])`, random forest, and genetic algorithm approaches `r citep(biblio["brooks_predicting_2016"])`. These classes of models often has the same structure of using FIB levels from time $t-1$--the prior-day--and covariates from time $t$ to predict beaches at time $t$.
 
 Yet, the reliance on prior-day FIB levels are likely the source of inaccuracy. The cause of elevated levels is unlikely to persist between days `r citep(biblio[c("morrison_receiver_2003","cheung_variations_1991","brenniman_microbial_1981")])`. Covariates can help determine when conditions are optimal for bacteria growth, but are still imprecise. Importantly, most statistical models are tuned to maximize overall accuracy (e.g., high $R^2$), but elevated FIB levels are often rare events. Thus, models frequently have low sensitivity; that is, the ratio of accurately estimated elevated FIB levels over instances of actual exceedences. 
 
 ## Chicago Prior-day Nowcast Model
 
-Chicago Park District measures water quality of 20 beaches along 26 miles against Lake Michigan on Chicago's eastern shore. There is no single source of microbial contamination in Lake Michigan; rather it is likely introduced by birds, land-based animals, beaches, and people. The Chicago River is contiguous to Lake Michigan but a lock limits water flowing into the lake. While the lock is sometimes opened, it is generally less than once per year, and beaches are immediately closed `r citep(biblio["chicago_metropolitan_water_reclamation_district_reversals_2016"])`.
+Chicago Park District measures water quality of 20 beaches along 26 miles against Lake Michigan on Chicago's eastern shore shown in Figure 1. There is no single source of microbial contamination in Lake Michigan; rather it is likely introduced by birds, land-based animals, beaches, and people. The Chicago River is contiguous to Lake Michigan but a lock limits water flowing into the lake. While the lock is sometimes opened, it is generally less than once per year, and beaches are immediately closed `r citep(biblio["chicago_metropolitan_water_reclamation_district_reversals_2016"])`.
+
+```{r beach_map, echo=FALSE, fig.height=6, fig.width=4.6, fig.align='center', fig.cap='Map of Lake Michigan beaches in Chicago with results of k-means clustering.', results='hide', message=FALSE, warning=FALSE}
+
+## map size settings
+
+x <- .25
+y <- x * 1.3
+xlow <- -87.607273 - (x/2)
+xhigh <- -87.607273 + (x/2)
+ylow <- 41.863616 - (y/2)
+yhigh <- 41.863616 + (y/2)
+
+## create beach location dataset
+
+mapDf <- data.frame(Client.ID = c("12th", "31st", "57th", "63rd", "Albion", "Calumet", "Foster",
+                                  "Howard", "Jarvis", "Juneway", "Leone", "Montrose", "North Avenue",
+                                  "Oak Street", "Ohio", "Osterman", "Rainbow", "Rogers", "South Shore",
+                                  "39th"),
+                    Longitude = c(-87.607273, -87.606380, -87.578814, -87.574059, -87.656630, -87.528369,
+                                  -87.649444, -87.663889, -87.662407, -87.665141, -87.661405, -87.637448,
+                                  -87.625146, -87.622680, -87.613016, -87.652233, -87.550556, -87.664589, 
+                                  -87.561562, -87.595582),
+                    Latitude = c(41.863616, 41.839388, 41.791073, 41.782798, 42.002584, 41.714927, 41.978946,
+                                 42.018919, 42.016114, 42.022470, 42.013105, 41.967048, 41.914863, 41.903013,
+                                 41.893509, 41.986671, 41.759164, 42.021492, 41.768801, 41.821366),
+                    Justify = c("L"),
+                    Cluster = c("four","four","five","excluded","one","excluded","one","three","three","three","three","excluded","two","two","excluded","one","excluded","three","five","four"),
+                    stringsAsFactors = FALSE)
+mapDf$Cluster <- as.factor(mapDf$Cluster)
+mapDf$Cluster = factor(mapDf$Cluster,levels(mapDf$Cluster)[c(4,6,5,3,2,1)])
+mapDf$plotLongitude <- mapDf$Longitude
+mapDf$plotLatitude <- mapDf$Latitude 
+mapDf[mapDf$Client.ID == "12th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "12th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "31st", "plotLongitude"] <- mapDf[mapDf$Client.ID == "31st", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "57th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "57th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] <- mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] - .01
+mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] <- mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] + .02
+mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] + .015
+mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] <- mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "39th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "39th", "plotLongitude"] + .01
+mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] + .002
+mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] + .003
+mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] - .002
+mapDf[mapDf$Client.ID == "Howard", "Justify"] <- "R"
+mapDf[mapDf$Client.ID == "Juneway", "Justify"] <- "R"
+mapDf[mapDf$Client.ID == "Leone", "Justify"] <- "R"
+
+## Plot beach location data
+
+ggplot(data = cookShape) + 
+  geom_polygon(aes(x = long, y = lat, group = group), 
+               fill = "white", color = "black", size = 0.25) + 
+  geom_point(aes(x = Longitude, y = Latitude, shape = Cluster), data = mapDf, size = 4, stroke = .8) +
+  coord_fixed(xlim = c(xlow, xhigh), ylim = c(ylow, yhigh)) +
+  scale_shape(solid = FALSE) +
+  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "L",], hjust = 0, size = 3) +
+  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "R",], hjust = 1, size = 3) +
+  annotate("text", x = -87.54, y = 41.95, label = "Lake Michigan", size = 5) +
+  annotate("text", x = -87.7, y = 41.87, label = "Chicago", size = 5) +
+  theme_map()
+```
+
 
 Beaches operate from Memorial Day weekend, which is just before the last Monday in May, through Labor Day, which is the first Monday in September -- approximately 122 days. As a result, there are approximately 2,440 "beach days," which each represent an observation in the model. If FIB levels exceed the acceptable threshold for a given beach day, a public advisory notice is issued, warning potential swimmers about the heigtened risk. 
 
@@ -193,13 +267,13 @@ Water samples were collected for culture-based testing each morning and recorded
 
 `r citet(biblio["shively_prototypic_2016"])` used this data to build a prior-day nowcast model which used the prior-day culture tests and same-day hydrometeorological data to predict FIB levels at all beaches. The novel model leveraged the sensors to automate the management process by providing estimates to beach managers each weekday.
 
-Predictions were obtained from a random forest model and the predictions were published online for beach visitors. In 2015 and 2016, the overall accuracy was 90 and 93 percent, respectively, and specificity (true negative rate) was 98 and 99 percent. However, the sensitivity (true positive rate) was only 7 and 11.9 percent. 
+Predictions were obtained from a random forest model and the predictions were published online for beach visitors. In 2015 and 2016, the overall accuracy was 90 and 93 percent, respectively, and specificity (true negative rate) was 98 and 99 percent. However, the sensitivity (true positive rate) was only 7 and 11.9 percent for all Chicago beaches. 
 
 Beginning in 2015, Chicago Park District began to use limited qPCR testing of _enterococci_ at five beaches. Data were collected but not incorporated into the predictive model. During the summer of 2017, qPCR testing was expanded to all 20 beaches and culture-based testing of _E. coli_ was paused.
 
 ## Hybrid Nowcast Model
 
-`r citet(biblio["whitman_summer_2008"])` observed that FIB levels at Chicago beaches often correlated with nearby beaches on the same day, where extreme highs and extreme lows were simultaneous for most beaches. Figure 1 shows the correlation of culture-based _E. coli_ measurements between Chicago beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. Beaches were not uniformally correlated. Some beaches displayed strong clusters of correlation that exceed the correlation of readings within the same beach between days.
+`r citet(biblio["whitman_summer_2008"])` observed that FIB levels at Chicago beaches often correlated with nearby beaches on the same day, where extreme highs and extreme lows were simultaneous for most beaches. Figure 2 shows the correlation of culture-based _E. coli_ measurements between Chicago beaches from 2006 through 2017. The branches denote the "nearest neighbor" for each pair of beaches, a simple way to show similar beaches. Beaches were not uniformally correlated. Some beaches displayed strong clusters of correlation that exceed the correlation of readings within the same beach between days.
 
 ```{r correlation_heatmap, echo=FALSE, fig.width=5, fig.height=4, fig.align='center', fig.cap='Pearson correlation coefficient heat map of daily E. coli levels at Chicago beaches between 2006 and 2017. Each level of tree shows the nearest-neighbor correlation.', results='hide', message=FALSE, warning=FALSE}
 
@@ -222,7 +296,7 @@ include_graphics("correlation-heatmap.png")
 file.remove("correlation-heatmap.png")
 ```
 
-Beaches were placed into clusters where bacteria levels within clusters were highly correlated, but levels between clusters were not. A clustering algorithm, $J\left( \dots \right)$, assigned beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels:
+We identified clusters of beaches that had correlated FIB levels. A clustering algorithm, $J\left( \dots \right)$, assigned beaches, $x_i$, to a cluster $k$ based on correlation between historical bacteria levels between 2006 and 2016:
 
 $$ K = J \left( x_1^t, x_2^t, \dots, x_n^t \right) $$
 We selected one beach, $\hat{x}_i^t$, in each cluster to be the feature beach for predicting bacteria levels for the remaining $m$ beaches in the cluster, $x_i^t$. Thus, each cluster ($k$) had the following membership: $K_i: \{ \hat{x}_1^t, x_1^t, x_2^t, \dots, x_m^t \}$.
@@ -236,7 +310,7 @@ This model leverages observations from the same time $t$ to predict FIB levels a
 
 ## Identifying Beach Clusters
 
-We applied the above approach to Chicago's beach data. We used K-means clustering algorithm to detect when beaches had similar movements. First, there was an initial, random guess for which beaches belong in clusters. The distance or error was then measured for all clusters. Then, membership of clusters was slightly altered, and the error was measured and calculated increasing or decreasing. This process was repeated until the lowest measured error was obtained.
+We applied the above approach to Chicago's beach data. We used K-means clustering algorithm to detect when beaches had similar movements. First, there was an initial, random guess for which beaches belong in clusters. The distance or error was then measured for all clusters. Then, membership of clusters was slightly altered, and we calculated whether the error had increased or decreased. This process was repeated until the lowest measured error was obtained.
 
 Mathematically:
 
@@ -244,7 +318,7 @@ $$ J(x_k, y_k) = \sum_{i=1}^{k} \sum_{x_i \in B_k} ||x_i - \mu_k||^2 $$
 
 We chose to limit to 5 clusters ($k = 5$) because it aligned to the number of qPCR testing sites by Chicago Park District starting in 2015. K-means was applied to beaches based on latitude, longitude, total _E. coli_ exceedances, and length of the longest breakwater. Each of these variables was scaled and centered by calculating z-scores prior to clustering. 
 
-Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. Namely, we removed beaches that have lengthy breakwaters since it has an impact on bacteria levels at those beaches. We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater length and total bacteria exceedances between 2006 and 2017 was positive ($r$ = 0.73). We removed 63rd Street, Rainbow, Montrose, and Ohio, which have long breakwaters or a similar feature. 
+Some beaches were removed from the clustering because they were historical outliers for bacteria levels or had distinct physical features. We removed beaches that have lengthy breakwaters since it has an impact on bacteria levels at those beaches. We tested this hypothesis by measuring the distance of the southernmost part of the beach to the northeasternmost edge of the breakwater. The correlation between the breakwater length and total bacteria exceedances between 2006 and 2017 was positive ($r$ = 0.73). We removed 63rd Street, Rainbow, Montrose, and Ohio, which have long breakwaters or a similar feature. 
 
 Likewise, our earlier analytical modeling showed that beaches with a high frequency of high bacteria levels often confounded the model. Calumet, which had high exceedances as well as a medium-sized breakwater, was also removed from the analytical model. These 5 removed beaches comprised two of the clusters from the initial K-means analysis.
 
@@ -309,7 +383,7 @@ As the number of trees in the random forest model grew, model error decreased un
 
 The model was tuned and validated using leave-one-year-out cross validation, in which the validation set consisted of all the observations in one year, and the training set consisted of all other observations. The process was repeated until each year had been in the validation set. The year 2016 was left out as a final validation set.
 
-Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 3 shows, we could have increased the number of times we correctly predicted elevated FIB levels, but it would come at a cost of also increasing the number unnecessary warnings to beach-goers.
+Historically, the Chicago prior-day model from 2015 through 2016 had a false-positive rate of 1.8 percent for all beaches. That is, the model falsely predicted elevated bacteria levels 1.8 percent of all beach days over the course of the summer--typically 30 beach-days per season. We chose to align the parameters of our model to this historical false-positive rate. As Figure 3 shows, we could have increased the number of times we correctly predicted elevated FIB levels, but it would come at a cost of also increasing the number unnecessary warnings to beach-goers.
 
 Figure 3 shows the receiver operating characteristic (ROC), which shows the trade-off between increasing the number of days with true predictions versus days with falsely identified elevated levels. By constraining the model to only have a 1.8 percent false-positive rate, the true positive rate is forecasted to be 22 percent.
 
@@ -360,9 +434,7 @@ A threshold was chosen to transform the model prediction to a binary outcome. To
 
 # Results and Discussion
 
-A pilot analytical model was created using historical data from 2015 and 2016, using the modeling concept described in Section 2. However, to correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Therefore, pilot models were live tested at Chicago beaches in 2017 on newly collected data.
-
-Separately, _enterococci_ qPCR testing had been rolled out in Chicago in a separate pilot in 2015 and 2016; it was implemented at all 20 beaches during the summer of 2017. Culture-based _E. coli_ testing methods were phased-out in 2017 and no longer collected. 
+To correctly assess the accuracy of the model, we needed to use out-of-sample predictions. As can happen with machine learning, it is possible that the accuracy of the model was caused by the analysts tuning the model to fit existing data and accompanying noise. Fitting existing data too well can lead to the model failing to accurately predict when encountering new data. Pilot analytical models were created using historical data from 2015 and 2016, using the modeling concept described in Section 2.  Pilot models were live tested at Chicago beaches in 2017 on newly collected data.
 
 In summer 2017, the pilot analytical model went live with some limitations imposed by available data. The model inputs were _enterococci_ qPCR test results for Calumet, Rainbow, South Shore, 63rd Street, and Montrose, and the predicted beaches were the other 15 regularly tested beaches. The model was trained using results from the qPCR pilot for 2015 and 2016, and predicted the culture-based _E. coli_ levels for the predicted beach on the same day. An application was developed and deployed which regularly checked Chicago's public data portal for qPCR results for the feature beaches. Every day during the summer, once all the qPCR results were posted, the application automatically ran the model and uploaded the predictions on the public data portal within five minutes.
 
@@ -372,11 +444,11 @@ Both predictions and samples were collected each day during the week. This proce
 
 To translate the predicted _E. coli_ level to an advisory decision, beaches that were forecasted to exceed 381 CFU/100ml were predicted to have a swim advisory due to FIB. Even though this threshold exceeds Environmental Protection Agency (EPA) requirements, that threshold was empircally shown to be the best correlate to actual exceedances using EPA standards. Subsequent lab testing and swim advisories due to FIB were issued only if FIB exceeded EPA standards.
 
-Over the summer of 2017, we compared predictions to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])` and calculated several standard measurements to evaluate the performance of the model.
+Over the summer of 2017, we compared predictions to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])` and calculated several standard measurements to evaluate the performance of the model. We specifically compared the predictions at the 15 beaches where the hybrid modeling was used to formulate predictions, not on all 20 beaches because some were not predicted, but were inputs for predictions at other beaches.
 
 ## Results
 
-The analytical model had a sensitivity (true positive rate) of 11.2 percent compared to a sensitivity of 3.7 percent in 2016 (Table 2). From 2015 through 2016, the historical average true positive rate for the predicted beaches was 3.4 percent. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
+The analytical model had a sensitivity (true positive rate) of 11.2 percent for the predicted beaches compared to an average of 3.4 percent at the same beaches in 2015 and 2016. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
 
 The precision of the model--the portion of predicted high FIB that were accurate compared to all predicted FIB beach days--also grew from 17 to 27 percent--a 59 percent increase. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. 
 
@@ -592,11 +664,11 @@ knitr::kable(varImpData, caption = "Variable importance as measured by mean squa
 
 ## Multivariate Model
 
-Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
+Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables cited in previous literature to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
 
-`r citep(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
+`r citet(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
 
-Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(biblio["whitman_solar_2004"])` found that increased sunlight inactivated _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_ found. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
+Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(biblio["whitman_solar_2004"])` found that increased sunlight inactivated _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
 
 We included various measurements of wind since `r citet(biblio[c("smith_effect_1999", "olyphant_elements_2004")])` found that wind is a reliable predictor of FIB levels. In particular, beaches downwind from point-pollution sources or where FIB was active are more likely to experience elevated _E. coli_ levels. We used the Dark Sky API to determine the wind direction and intensity each day, as well has historical data preceeding a beach sample.
 
@@ -668,81 +740,6 @@ treesPlot <- ggplot() +
   xlab("Number of Trees") +
   ylab("MSE")
 grid.arrange((treesPlot + theme_Publication()),nrow=1)
-```
-
-\pagebreak
-
-```{r beach_map, echo=FALSE, fig.height=6, fig.width=4.6, fig.align='center', fig.cap='Map of Lake Michigan beaches in Chicago with results of k-means clustering.', results='hide', message=FALSE, warning=FALSE}
-
-## map size settings
-
-x <- .25
-y <- x * 1.3
-xlow <- -87.607273 - (x/2)
-xhigh <- -87.607273 + (x/2)
-ylow <- 41.863616 - (y/2)
-yhigh <- 41.863616 + (y/2)
-
-## create beach location dataset
-
-mapDf <- data.frame(Client.ID = c("12th", "31st", "57th", "63rd", "Albion", "Calumet", "Foster",
-                                  "Howard", "Jarvis", "Juneway", "Leone", "Montrose", "North Avenue",
-                                  "Oak Street", "Ohio", "Osterman", "Rainbow", "Rogers", "South Shore",
-                                  "39th"),
-                    Longitude = c(-87.607273, -87.606380, -87.578814, -87.574059, -87.656630, -87.528369,
-                                  -87.649444, -87.663889, -87.662407, -87.665141, -87.661405, -87.637448,
-                                  -87.625146, -87.622680, -87.613016, -87.652233, -87.550556, -87.664589, 
-                                  -87.561562, -87.595582),
-                    Latitude = c(41.863616, 41.839388, 41.791073, 41.782798, 42.002584, 41.714927, 41.978946,
-                                 42.018919, 42.016114, 42.022470, 42.013105, 41.967048, 41.914863, 41.903013,
-                                 41.893509, 41.986671, 41.759164, 42.021492, 41.768801, 41.821366),
-                    Justify = c("L"),
-                    Cluster = c("four","four","five","excluded","one","excluded","one","three","three","three","three","excluded","two","two","excluded","one","excluded","three","five","four"),
-                    stringsAsFactors = FALSE)
-mapDf$Cluster <- as.factor(mapDf$Cluster)
-mapDf$Cluster = factor(mapDf$Cluster,levels(mapDf$Cluster)[c(4,6,5,3,2,1)])
-mapDf$plotLongitude <- mapDf$Longitude
-mapDf$plotLatitude <- mapDf$Latitude 
-mapDf[mapDf$Client.ID == "12th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "12th", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "31st", "plotLongitude"] <- mapDf[mapDf$Client.ID == "31st", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "57th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "57th", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] <- mapDf[mapDf$Client.ID == "63rd", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Albion", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Calumet", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Foster", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Howard", "plotLongitude"] - .01
-mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Jarvis", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLongitude"] - .01
-mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLongitude"] - .01
-mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Montrose", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] <- mapDf[mapDf$Client.ID == "North Avenue", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Oak Street", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Ohio", "plotLongitude"] + .02
-mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Osterman", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rainbow", "plotLongitude"] + .015
-mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] <- mapDf[mapDf$Client.ID == "South Shore", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "39th", "plotLongitude"] <- mapDf[mapDf$Client.ID == "39th", "plotLongitude"] + .01
-mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Rogers", "plotLatitude"] + .002
-mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Juneway", "plotLatitude"] + .003
-mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] <- mapDf[mapDf$Client.ID == "Leone", "plotLatitude"] - .002
-mapDf[mapDf$Client.ID == "Howard", "Justify"] <- "R"
-mapDf[mapDf$Client.ID == "Juneway", "Justify"] <- "R"
-mapDf[mapDf$Client.ID == "Leone", "Justify"] <- "R"
-
-## Plot beach location data
-
-ggplot(data = cookShape) + 
-  geom_polygon(aes(x = long, y = lat, group = group), 
-               fill = "white", color = "black", size = 0.25) + 
-  geom_point(aes(x = Longitude, y = Latitude, shape = Cluster), data = mapDf, size = 4, stroke = .8) +
-  coord_fixed(xlim = c(xlow, xhigh), ylim = c(ylow, yhigh)) +
-  scale_shape(solid = FALSE) +
-  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "L",], hjust = 0, size = 3) +
-  geom_text(aes(x = plotLongitude, y = plotLatitude, label = Client.ID), data = mapDf[mapDf$Justify == "R",], hjust = 1, size = 3) +
-  annotate("text", x = -87.54, y = 41.95, label = "Lake Michigan", size = 5) +
-  annotate("text", x = -87.7, y = 41.87, label = "Chicago", size = 5) +
-  theme_map()
 ```
 
 \pagebreak
