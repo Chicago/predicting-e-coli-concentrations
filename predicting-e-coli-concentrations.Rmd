@@ -341,6 +341,41 @@ knitr::kable(table_beach_clusters, caption = "Final results of K-means clusterin
 
 Within each cluster, the beach with the most historical culture-based _E. coli_ exceedances was selected to be the feature beach whose _enterococci_ qPCR result would be input to the model. By rapid testing the beaches with the most frequest exceedances, we captured an added operational benefit of maximizing the number of correct advisories. The remaining beaches were selected to be predicted by the model.
 
+## Predictors and Covariates
+
+Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables cited in previous literature to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
+
+`r citet(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
+
+Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(biblio["whitman_solar_2004"])` found that increased sunlight inactivated _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
+
+We included various measurements of wind since `r citet(biblio[c("smith_effect_1999", "olyphant_elements_2004")])` found that wind is a reliable predictor of FIB levels. In particular, beaches downwind from point-pollution sources or where FIB was active are more likely to experience elevated _E. coli_ levels. We used the Dark Sky API to determine the wind direction and intensity each day, as well has historical data preceeding a beach sample.
+
+Similarly, wave and tidal patterns seem to influence observed FIB levels. `r citet(biblio["le_fevre_role_2003"])` found that _E. coli_ levels could be resuspended under tidal waves, allowing _E. coli_ to be observed in locations only reached by waves or tidal levels. In a multivariate model, `r citet(biblio["crowther_relationships_2001"])` showed that tidal levels affected observed FIB levels. Unfortunately, our team did not have access to suffucient historical data to determine tidal levels, but we approximated their effect by using the lunar phase. Additionally, we used the previous day's Lake Michigan water level and 3-day average water level, as measured and obtained by the National Oceanic and Atmospheric Administration (NOAA) at Calumet Harbor in Chicago.
+
+Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
+
+Table 2 shows the covariates considered along with correlation between beaches. 
+
+```{r table_hybrid_multivariate_variables, echo=FALSE, message=FALSE, warning=FALSE}
+
+Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total rainfall", "Total rainfall total until 8am",
+               "Daily cloud cover forecast", "Prior-day cloudiness", "3-day total cloudiness", "Length of daylight time in a day",
+               "Wind Direction", "Wind Speed", "1-day average wind speed", "3-day average wind speed", "Wind speed at 8am",
+               "Lunar phase", "1-day lake level", "3-day average lake level",
+               "Indicator for weekday", "Julian date")
+Variables <- data.frame(Variables)
+
+knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE) %>% 
+  kableExtra::group_rows("Precipitation", 1, 4) %>% 
+  kableExtra::group_rows("Sunlight", 5, 8) %>%
+  kableExtra::group_rows("Wind", 9, 13) %>%
+  kableExtra::group_rows("Tidal Levels", 14, 14) %>%
+  kableExtra::group_rows("Lake Level", 15, 16) %>%
+  kableExtra::group_rows("Visitor Density", 17, 18)
+  
+```
+
 ## Building the Predictive Model
 
 A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 2). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5) and due to the north-to-south current of the lake.
@@ -448,9 +483,13 @@ Over the summer of 2017, we compared predictions to the results from the actual 
 
 ## Results
 
-The analytical model had a sensitivity (true positive rate) of 11.2 percent for the predicted beaches compared to an average of 3.4 percent at the same beaches in 2015 and 2016. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
+Table 3 shows the hybrid analytical model had a sensitivity (true positive rate) of 11.2 percent for the predicted beaches compared to an average of 3.4 percent at the same beaches in 2015 and 2016. That is, the hybrid model increased the true positive rate by 230 percent over the historical average. Additionally, these beaches have typically not been predicted as well as the other beaches -- the same prior model that averaged 3.4 percent for the 15 predicted beaches averaged 9.5 percent for all 20 beaches.
 
-The precision of the model--the portion of predicted high FIB that were accurate compared to all predicted FIB beach days--also grew from 17 to 27 percent--a 59 percent increase. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. 
+The precision of the model--the portion of predicted high FIB that were accurate compared to all predicted FIB beach days--also grew from 17 to 27 percent--a 59 percent increase. Meanwhile, the false positive rate was slightly higher at 2.0 percent during 2017. Area Under Curve (AUC) is a measure that shows the ability of the model to show the trade-off between the true positive rate and false positive rate. The AUC for the hybrid model is 0.837, which is higher than the prior-day model that was around 0.64 in 2015 and 2016. A higher AUC does indicate the model has improved the ability to estimate beaches with elevated bacteria levels without raising a disproportionate number of false positives, but there does appear to be significant room for improvements in the model performance.
+
+We also tested a model that used a combination of interbeach correlation with predictors for precipitation, sunlight, wind, proxies for human density, and tidal and lake levels. The performance of the multivariate hybrid model was similar to the hybrid model without other predictors. AUC for the multivate hybrid model was 0.855, 0.018 higher. This indicated that our predictors only provided marginal improvements to the precision of the predictions, where most of the predictive power is provided by the interbeach correlation.
+
+To test the predictive power of the hydrometerological covariates, we also formulated another multivariate model which eliminates the interbeach correlation. The altered multivariate model is a random forest model using the predictors discussed in section 2.5. That model performed much lower than either the hybrid or multivariate hybrid model with an AUC of 0.703.
 
 ```{r pilot_results, echo=FALSE, fig.height=4, fig.width=6, fig.align='center', fig.cap='Comparison of the 2017 hybrid pilot to existing prior-day model for "true positive rates" (sensitivity) and "false positive rates" (type I error)',  results='hide', message=FALSE, warning=FALSE}
 # 2017 Pilot results
@@ -660,61 +699,6 @@ colnames(varImpData) <- c("Variable", "Percent Increase in MSE")
 
 knitr::kable(varImpData, caption = "Variable importance as measured by mean squared error (MSE).", format = "pandoc", escape = FALSE, row.names = FALSE, digits = 1)
 
-```
-
-## Multivariate Model
-
-Previous literature has focused on using a variety of covariates to predict _E. coli_ levels. We created and tested an analytical model which relied on interbeach correlations and also used other variables cited in previous literature to predict FIB in Lake Michigan. The model resembled the model constructed in section 3 of the paper.
-
-`r citet(biblio[c("ackerman_relationship_2003", "morrison_receiver_2003")])` found that large rainstorms increased FIB levels 2 to 5 days after the rain has ceased. The research team collected data from the Dark Sky application programmer interface (API) to understand forecasted rainfall for a day of water measurement and also understand various historical measures of rainfall.
-
-Likewise, the same data source was used to determine the amount of sunlight the lake was exposed to at the beaches. `r citet(biblio["whitman_solar_2004"])` found that increased sunlight inactivated _E. coli_ at a Chicago beach, whereas cloudy days decreased _E. coli_. Similar to precipitation, Dark Sky data was used to measure forecasted cloud cover as well as historical measurements of cloud cover preceding water quality tests.
-
-We included various measurements of wind since `r citet(biblio[c("smith_effect_1999", "olyphant_elements_2004")])` found that wind is a reliable predictor of FIB levels. In particular, beaches downwind from point-pollution sources or where FIB was active are more likely to experience elevated _E. coli_ levels. We used the Dark Sky API to determine the wind direction and intensity each day, as well has historical data preceeding a beach sample.
-
-Similarly, wave and tidal patterns seem to influence observed FIB levels. `r citet(biblio["le_fevre_role_2003"])` found that _E. coli_ levels could be resuspended under tidal waves, allowing _E. coli_ to be observed in locations only reached by waves or tidal levels. In a multivariate model, `r citet(biblio["crowther_relationships_2001"])` showed that tidal levels affected observed FIB levels. Unfortunately, our team did not have access to suffucient historical data to determine tidal levels, but we approximated their effect by using the lunar phase. Additionally, we used the previous day's Lake Michigan water level and 3-day average water level, as measured and obtained by the National Oceanic and Atmospheric Administration (NOAA) at Calumet Harbor in Chicago.
-
-Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
-
-Table A.1 shows additional covariates used in the analytical model. 
-
-```{r table_hybrid_multivariate_variables, echo=FALSE, message=FALSE, warning=FALSE}
-
-Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total rainfall", "Total rainfall total until 8am",
-               "Daily cloud cover forecast", "Prior-day cloudiness", "3-day total cloudiness", "Length of daylight time in a day",
-               "Wind Direction", "Wind Speed", "1-day average wind speed", "3-day average wind speed", "Wind speed at 8am",
-               "Lunar phase", "1-day lake level", "3-day average lake level",
-               "Indicator for weekday", "Julian date")
-Variables <- data.frame(Variables)
-
-knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE) %>% 
-  kableExtra::group_rows("Precipitation", 1, 4) %>% 
-  kableExtra::group_rows("Sunlight", 5, 8) %>%
-  kableExtra::group_rows("Wind", 9, 13) %>%
-  kableExtra::group_rows("Tidal Levels", 14, 14) %>%
-  kableExtra::group_rows("Lake Level", 15, 16) %>%
-  kableExtra::group_rows("Visitor Density", 17, 18)
-  
-```
-
-Table A.2 shows results comparing the multivariate model to the Hybrid model discussed in the body of the paper. The Area Under Curve (AUC), a general measurement for perfomance, was slightly higher (0.846) than the model which only relied on interbeach correlation (0.833). While the multivariate model technically performs better, the insignificance of the difference indicates that the addition of the additional variables does not increase predictive power.
-
-We also tested an altered form of the model that removed the same-day test results as a predictor, instead it only used the variables in Table 1 as the predictor. The AUC dropped signifcantly to 0.701, which shows a significant loss in accuracy.
-
-```{r table_multivariate_model_results, echo=FALSE, message=FALSE, warning=FALSE}
-rocHybrid <- roc(hybrid$predictions$actual_binary, hybrid$predictions$predictionRF)
-aucHybrid <- auc(rocHybrid)[1]
-rocMultivariate <- roc(multivariate$predictions$actual_binary, multivariate$predictions$predictionRF)
-aucMultivariate <- auc(rocMultivariate)[1]
-rocMultivariateAltered <- roc(multivariateAltered$predictions$actual_binary, multivariateAltered$predictions$predictionRF)
-aucmultivariateAltered <- auc(rocMultivariateAltered)[1]
-tableData <- data.frame("Model" = c("Hybrid", "Multivariate", "Multivariate (altered)"),
-                        "Time Period" = "2006 - 2016",
-                        "AUC" = c(round(aucHybrid, 3),
-                                  round(aucMultivariate, 3),
-                                  round(aucmultivariateAltered, 3)))
-
-knitr::kable(tableData, format = "pandoc", caption = "Comparison of Multivariate model to Hybrid model.")
 ```
 
 \pagebreak
