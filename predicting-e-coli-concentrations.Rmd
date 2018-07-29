@@ -683,7 +683,7 @@ knitr::kable(modelCompData, format = "pandoc", caption = "Comparing Specificity,
 
 ## Discussion
 
-Overall, the hybrid model correctly raised warnings by 230 percent. When a beach was predicted to have an elevated level, it is 58 percent less likely to have been a "false positive" (type I error). The increase in correct predictions, however, was not induced by simply raising more erroneous warnings. The "false negative" rate only slightly increased (type II errors) by two-tenths of a percent.
+Overall, the hybrid model correctly raised warnings by 230 percent. When a beach was predicted to have an elevated level, it is 61.7% percent less likely to have been a "false positive" (type I error). The increase in correct predictions, however, was not induced by simply raising more erroneous warnings. The "false negative" rate only slightly increased (type II errors) by two-tenths of a percent.
 
 In terms of impact on beachgoers, the hybrid model issued 90 correct advisories while there were 71 incorrect advisories. In 2016, the Chicago prior-day nowcast model issued 12 correct advisories while issuing 184 incorrect advisories. Likewise in 2015, the prior-day model issued 14 correct advisories versus 184 incorrect advisories.
 
@@ -703,7 +703,7 @@ While this paper showed a 230 percent increase in sensitivity, the ability to pr
 
   * Hybrid nowcast modeling preserves information from the current day, instead of test data from the prior day.
   * The modeling technique allows for limited deployments of the costly qPCR testing equipment.
-  * Accuracy of predicting elevated bacteria levels increased from 3.4 percent to 11.2 percent--a 230 percent increase--while reducing false positive rates by 58 percent and maintaining similar rate for false negatives.
+  * Accuracy of predicting elevated bacteria levels increased from 3.4 percent to 11.2 percent--a 230 percent increase--while reducing false positive rates by 61.7 percent and maintaining similar rate for false negatives.
 
 # Acknowledgements
 
