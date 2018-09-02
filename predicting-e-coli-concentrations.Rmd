@@ -379,7 +379,8 @@ knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model"
   kableExtra::group_rows("Wind", 9, 13) %>%
   kableExtra::group_rows("Tidal Levels", 14, 14) %>%
   kableExtra::group_rows("Lake Level", 15, 16) %>%
-  kableExtra::group_rows("Visitor Density", 17, 18)
+  kableExtra::group_rows("Visitor Density", 17, 18) %>%
+  kable_styling(latex_options = c("repeat_header"))
 ```
 
 ## Building the Predictive Model
