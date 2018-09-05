@@ -77,13 +77,22 @@ library(ROCR)
 library(RSocrata)
 #webshot::install_phantomjs() #once installed on your computer, this can be commented out
 
+
+## Read data for tables / graphs
+# Need to place here before `ops_knit$set(root.dir)` in invoked.
+cookShape <- readOGR("geojson/Cook_County_Border.geojson")
+
+# Setting working directory in a separate setup chunk. See http://scisus.org/2016/08/26/problems-setting-root-dir-in-knitr/
+opts_knit$set(root.dir = paste0(getwd(), "/clear-water"))
+
 ## Read bibliography
 biblio <- read.bibtex("bibliography/zotero-references.bib")
 options("citation_format" = "pandoc")
+```
+```{r read_data, echo=FALSE, fig.show='hide', results='hide', message=FALSE, warning=FALSE}
 
-## Read data for tables / graphs
-cookShape <- readOGR("geojson/Cook_County_Border.geojson")
-setwd(paste0(getwd(), "/clear-water"))
+#setwd(paste0(getwd(), "/clear-water"))
+
 source("Multivariate-2017.R")
 multivariate <- model
 source("Master.R")
@@ -183,7 +192,7 @@ Yet, the reliance on prior-day FIB levels are likely the source of inaccuracy. T
 
 Chicago Park District measures water quality of 20 beaches along 26 miles against Lake Michigan on Chicago's eastern shore shown in Figure 1. There is no single source of microbial contamination in Lake Michigan; rather it is likely introduced by birds, land-based animals, beaches, and people. The Chicago River is contiguous to Lake Michigan but a lock limits water flowing into the lake. While the lock is sometimes opened, it is generally less than once per year, and beaches are immediately closed `r citep(biblio["chicago_metropolitan_water_reclamation_district_reversals_2016"])`.
 
-```{r beach_map, echo=FALSE, fig.height=6, fig.width=4.6, fig.align='center', fig.cap='Map of Lake Michigan beaches in Chicago with results of k-means clustering.', results='hide', message=FALSE, warning=FALSE}
+```{r beach_map, echo=FALSE, fig.height=6, fig.width=5, fig.align='center', fig.cap='Map of Lake Michigan beaches in Chicago with results of k-means clustering.', results='hide', message=FALSE, warning=FALSE}
 
 ## map size settings
 
@@ -353,9 +362,9 @@ Similarly, wave and tidal patterns seem to influence observed FIB levels. `r cit
 
 Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
 
-Table 2 shows the covariates considered along with correlation between beaches. 
+Table 2 shows the covariates considered. 
 
-```{r table_hybrid_multivariate_variables, echo=FALSE, message=FALSE, warning=FALSE}
+```{r table_hybrid_multivariate_model_variables, echo=FALSE, message=FALSE, warning=FALSE}
 
 Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total rainfall", "Total rainfall total until 8am",
                "Daily cloud cover forecast", "Prior-day cloudiness", "3-day total cloudiness", "Length of daylight time in a day",
@@ -364,14 +373,14 @@ Variables <- c("Forecast for today", "Yesterday total rainfall", "3 day total ra
                "Indicator for weekday", "Julian date")
 Variables <- data.frame(Variables)
 
-knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE) %>% 
+knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model", escape = FALSE, longtable = TRUE) %>% 
   kableExtra::group_rows("Precipitation", 1, 4) %>% 
   kableExtra::group_rows("Sunlight", 5, 8) %>%
   kableExtra::group_rows("Wind", 9, 13) %>%
   kableExtra::group_rows("Tidal Levels", 14, 14) %>%
   kableExtra::group_rows("Lake Level", 15, 16) %>%
-  kableExtra::group_rows("Visitor Density", 17, 18)
-  
+  kableExtra::group_rows("Visitor Density", 17, 18) %>%
+  kable_styling(latex_options = c("repeat_header"))
 ```
 
 ## Building the Predictive Model
@@ -768,5 +777,5 @@ knitr::kable(confMatrixData, caption = "Confusion matrix for 2017 pilot of the h
 # References
 
 ```{r references, echo=FALSE, message=FALSE}
-write.bibtex(file="bibliography/bibliography.bib")
+write.bibtex(file="../bibliography/bibliography.bib")
 ```
