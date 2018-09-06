@@ -362,7 +362,7 @@ Similarly, wave and tidal patterns seem to influence observed FIB levels. `r cit
 
 Finally, researchers have found the human and animal activity at the beaches can influence FIB levels. Animal activity, whether domesticated pets or wildlife, may introduce fecal bacteria to the environment `r citep(biblio[c("boehm_tiered_2003","reeves_scaling_2004")])`. Likewise, human activity alongside rain and runoff can introduce bacteria from the beaches into the water. While Chicago Park District does not have frequent surveys of beach visitors for each beach, we used indicators for weekday and weekend as well as the Julian date to approximate activity at each beach.
 
-Table 2 shows the covariates considered along with correlation between beaches. 
+Table 2 shows the covariates considered. 
 
 ```{r table_hybrid_multivariate_model_variables, echo=FALSE, message=FALSE, warning=FALSE}
 
