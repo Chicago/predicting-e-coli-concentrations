@@ -385,7 +385,7 @@ knitr::kable(Variables, caption = "Variables used for multivariate Hybrid model"
 
 ## Building the Predictive Model
 
-A random forest regression model was trained with the predicted beach's name and 10 years of culture-based test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 3). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5) and due to the north-to-south current of the lake.
+A random forest regression model was trained with the predicted beach's name and 10 years of culture-based _E. coli_ test results for each of the feature beaches. Variable importance for the random forest model was assessed by calculating the percentage increase in mean squared error (MSE) as a result of permuting the values for each variable (Figure 3). The most important feature was the _E. coli_ level at Leone Beach. In fact, the importance of each beach's _E. coli_ level decreased as the beach location was further south. This is likely due to the fact that more beaches on the north side (10) are being predicted than on the south side (5) and due to the north-to-south current of the lake.
 
 ```{r variable_importance, echo=FALSE, fig.height=5, fig.width=4, fig.align='center', fig.cap='Variable importance of each factor when added to random forest model as measured by mean squared error', results='hide', message=FALSE, warning=FALSE}
 varImpData <- importance(model$model, main = "", type=1)
@@ -486,7 +486,7 @@ Both predictions and samples were collected each day during the week. This proce
 
 To translate the predicted _E. coli_ level to an advisory decision, beaches that were forecasted to exceed 381 CFU/100ml were predicted to have a swim advisory due to FIB. Even though this threshold exceeds Environmental Protection Agency (EPA) requirements, that threshold was empircally shown to be the best correlate to actual exceedances using EPA standards. Subsequent lab testing and swim advisories due to FIB were issued only if FIB exceeded EPA standards.
 
-Over the summer of 2017, we compared predictions to the results from the actual test results `r citep(biblio["city_of_chicago_beach_2016-1"])` and calculated several standard measurements to evaluate the performance of the model. We specifically compared the predictions at the 15 beaches where the hybrid modeling was used to formulate predictions, not on all 20 beaches because some were not predicted, but were inputs for predictions at other beaches.
+Over the summer of 2017, we compared predictions to the results from the actual qPCR _enterococci_ test results `r citep(biblio["city_of_chicago_beach_2016-1"])` and calculated several standard measurements to evaluate the performance of the model. We specifically compared the predictions at the 15 beaches where the hybrid modeling was used to formulate predictions, not on all 20 beaches because some were not predicted, but were inputs for predictions at other beaches.
 
 ## Results
 
