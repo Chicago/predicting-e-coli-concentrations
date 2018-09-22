@@ -18,3 +18,11 @@ Examples:
   * Inline citation (e.g., Whiteman (2008)): `r citet(biblio["whitman_summer_2008"])`
   * Cite by entry position: `r citep(biblio[[2]])`
   * Cite multiple authors: `r citep(biblio[c("whitman_summer_2008","boehm_decadal_2002"])`
+  
+## Dependencies
+
+This project has been tested using both [R](https://cran.r-project.org/) 3.4 and 3.5. Source code and version number for all R package dependencies is located in the `packrat` directory and managed using [Packrat](http://rstudio.github.io/packrat/). 
+
+### Packrat
+
+Some users have reported difficulty compiling R packages `data.table` and `rgdal` from source code on some systems, especially Mac OS X. `Packrat` will fail to complete loading all packages if any single package fails to compile. If you are having difficulty with a specific package, try removing the entry for the package in the file `packrat/packrat.lock`. Then once `Packrat` completes installing all the other packages, install the missing package as you normnally would outside `Packrat`.
