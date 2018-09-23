@@ -25,4 +25,4 @@ This project has been tested using both [R](https://cran.r-project.org/) 3.4 and
 
 ### Packrat
 
-Some users have reported difficulty compiling R packages `data.table` and `rgdal` from source code on some systems, especially Mac OS X. `Packrat` will fail to complete loading all packages if any single package fails to compile. If you are having difficulty with a specific package, try removing the entry for the package in the file `packrat/packrat.lock`. Then once `Packrat` completes installing all the other packages, install the missing package as you normnally would outside `Packrat`.
+Some users have reported difficulty compiling R packages `data.table` and `rgdal` from source code on some systems, especially Mac OS X. `Packrat` will fail to complete loading all packages if any single package fails to compile. If you are having difficulty with a specific package, try removing the entry for the package in the file `packrat/packrat.lock`. Then once `Packrat` completes installing all the other packages, install the missing package as you normally would outside `Packrat`.
