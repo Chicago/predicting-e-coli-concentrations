@@ -18,9 +18,6 @@ author:
  - name: Renel Chesak
    affiliation: DePaul-CS
    email: rchesak1@gmail.com
- - name: Daniel Y. Little
-   affiliation: Chi Hack Night
-   email: daniel.y.little@gmail.com
  - name: Scott Beslow
    affiliation: Chi Hack Night
    email: scott.beslow@gmail.com
